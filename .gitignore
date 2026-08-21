@@ -1,18 +1,18 @@
-# Dart & Pub artifacts
-.dart_tool/
-.packages
-build/
-pubspec.lock
+# Build and compilation outputs
+bin/
+obj/
+out/
 
-# IDE / Editor files
-.idea/
+# IDE & Editor settings
+.vs/
 .vscode/
-*.iml
+*.user
+*.suo
 
 # macOS system files
 .DS_Store
 
-# Test harness local files
+# Test harness 
 __pycache__/
 *.pyc
 run_tests.py

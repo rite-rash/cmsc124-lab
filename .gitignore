@@ -16,3 +16,10 @@ out/
 __pycache__/
 *.pyc
 run_tests.py
+
+
+#individual lab0 submission files
+*_exercism.md
+*_refelection.md
+*_lab0.pdf
+*_git.*

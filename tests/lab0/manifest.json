@@ -1,0 +1,5 @@
+{
+  "ext": ".lyf",
+  "mode": "sidecar",
+  "run_entrypoint": "./run"
+}

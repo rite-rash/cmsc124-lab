@@ -1,1 +1,1 @@
-exec dotnet build/cmsc124_lab.dll "$@"
+exec dotnet build/cmsc124-lab.dll "$@"

@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-exec dotnet build/ck-prototype.dll "$@"
+exec dotnet build/cmsc124-lab.dll "$@"

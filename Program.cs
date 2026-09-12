@@ -29,7 +29,7 @@ namespace Ck
             {
                 source = File.ReadAllText(path);
             }
-            catch (IOException e)
+            catch (IOException)
             {
                 return 66; //cannot open input
             }

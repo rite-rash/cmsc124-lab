@@ -1,2 +1,2 @@
 set -e
-dotnet publish -c Release -o build
+dotnet publish cmsc124-lab.csproj -c Release -o build

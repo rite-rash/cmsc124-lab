@@ -147,7 +147,7 @@ namespace Ck
         {
             addToken(type, null);
         }
-        //add tokens wformat: lexeme, line, literal (object?), type
+        //add tokens with format: lexeme, line, literal (object?), type
         private void addToken(TokenType type, object? literal)
         {
             string lexeme = _source.Substring(start, current - start);

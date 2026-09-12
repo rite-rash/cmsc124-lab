@@ -1,1 +1,1 @@
-var greeting = "hello"
+track greeting = "hello"

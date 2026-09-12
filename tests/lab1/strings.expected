@@ -1,0 +1,7 @@
+Token(type=TRACK, lexeme=track, literal=null, line=1)
+Token(type=LABEL, lexeme=name, literal=null, line=1)
+Token(type=EQUAL, lexeme==, literal=null, line=1)
+Token(type=LYRIC, lexeme="Alice", literal=Alice, line=1)
+Token(type=STREAM, lexeme=stream, literal=null, line=2)
+Token(type=LYRIC, lexeme="", literal=, line=2)
+Token(type=EOF, lexeme=, literal=null, line=2)

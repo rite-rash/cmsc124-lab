@@ -83,7 +83,11 @@ namespace Ck
                 if (peek() == '\n') line++;
                 advance();
             }
-            if (atEnd()) return;
+            if (atEnd())
+            {
+                reportError(line, "Unterminated string. Perhaps you are missing a closing \"?");
+                return;
+            }
             advance(); //consume closing quote
 
             string value = _source.Substring(start + 1, current - start - 2);
@@ -245,9 +249,24 @@ namespace Ck
                 default:
                     if (isDigit(c)) { numericLiteral(); }
                     else if (isAlpha(c)) { label(); }
-                    else { }
+                    else
+                    {
+                        reportError(line, $"Unrecognized character {c}");
+                    }
                     break;
             }
+        }
+
+        public bool hadError
+        {
+            get;
+            private set;
+        } = false; //auto set false initially
+
+        private void reportError(int errLine, string errMessage)
+        {
+            hadError = true;
+            Console.Error.WriteLine($"ERROR AT LINE {errLine}: {errMessage}");
         }
 
     }

@@ -17,8 +17,13 @@ namespace Ck
 
         public override string ToString()
         {
-            string literalS = Literal?.ToString() ?? "null";
-            return $"Token(type={Type}, lexeme={Lexeme}, literal={literalS}, line={Line})";
+            string literalS = (Literal == null) ? "null" : Literal.ToString();
+
+            //clean for output
+            string safeLex = Lexeme.Replace("\n", "\\n");
+            string safeLit = literalS.Replace("\n", "\\n");
+
+            return $"Token(type={Type}, lexeme={safeLex}, literal={safeLit}, line={Line})";
         }
     }
 }

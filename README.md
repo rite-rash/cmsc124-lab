@@ -1,4 +1,4 @@
-# SoundWave
+# SoundWave (Working title)
 
 ## Creators
 
@@ -218,13 +218,20 @@ python3 run_tests.py tests/lab1
 ## Sample code
 
 ```
-[a short program]
+track greeting = "hello"
+stream greeting
 ```
 
 Output:
 
 ```
-[its output]
+Token(type=TRACK, lexeme=track, literal=null, line=1)
+Token(type=LABEL, lexeme=greeting, literal=null, line=1)
+Token(type=EQUAL, lexeme==, literal=null, line=1)
+Token(type=LYRIC, lexeme="hello", literal=hello, line=1)
+Token(type=STREAM, lexeme=stream, literal=null, line=2)
+Token(type=LABEL, lexeme=greeting, literal=null, line=2)
+Token(type=EOF, lexeme=, literal=null, line=2)
 ```
 
 ## Design rationale

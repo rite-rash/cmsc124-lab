@@ -24,6 +24,11 @@ public enum TokenType
     STREAM,     // output statement
     ALBUM,      // function definition 
     REPEAT,     //loop
+    LIVE,       //true
+    MUTE,       //false
+    REST,       //null/nil
+    CHORD,      //and
+    SOLO,        //or
 
     EOF //end
 

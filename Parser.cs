@@ -75,7 +75,7 @@ namespace Ck
         }
 
 
-        private Exception err(TokenType token, String msg)
+        private Exception err(Token token, String msg)
         {
             Console.Error.WriteLine($"[Line {token.Line}] Error: {msg}");
             throw new Exception(msg);

@@ -28,27 +28,32 @@ namespace Ck
             }
         }
 
-        private static int RunFile(string path)
+private static int RunFile(string path)
+{
+    string source;
+    try
+    {
+        source = File.ReadAllText(path);
+    }
+    catch (IOException)
+    {
+        return 66;
+    }
+
+    Scanner.HadError = false;
+    var scanner = new Scanner(source);
+    var tokens = scanner.scanTokens();
+
+    if (!Scanner.HadError)
+    {
+        foreach (var token in tokens)
         {
-            string source;
-            try
-            {
-                source = File.ReadAllText(path);
-            }
-            catch (IOException)
-            {
-                return 66; //cannot open input
-            }
-
-            var scanner = new Scanner(source);
-            var tokens = scanner.scanTokens();
-
-            foreach (var token in tokens)
-            {
-                Console.WriteLine(token);
-            }
-            return 0;
+            Console.WriteLine(token);
         }
+    }
+
+    return Scanner.HadError ? 65 : 0;
+}
 
         private static void RunRepl()
         {
@@ -58,6 +63,7 @@ namespace Ck
                 string? line = Console.ReadLine();
                 if (line is null) break; //eof
 
+                Scanner.HadError = false;
                 var scanner = new Scanner(line);
                 var tokens = scanner.scanTokens();
 

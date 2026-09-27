@@ -14,6 +14,14 @@ namespace Ck
         private int current = 0;
         private int line = 1;
 
+        public static bool HadError = false;
+
+        private static void ReportError(int line, string message)
+        {
+            System.Console.Error.WriteLine($"[line {line}] Error: {message}");
+            HadError = true;
+        }
+
         //for lookups of keywords
         private static readonly Dictionary<string, TokenType> Keywords = new()
         {
@@ -83,7 +91,11 @@ namespace Ck
                 if (peek() == '\n') line++;
                 advance();
             }
-            if (atEnd()) return;
+            if (atEnd())
+            {
+                ReportError(line, "Unterminated string.");
+                return;
+            }
             advance(); //consume closing quote
 
             string value = _source.Substring(start + 1, current - start - 2);
@@ -245,7 +257,7 @@ namespace Ck
                 default:
                     if (isDigit(c)) { numericLiteral(); }
                     else if (isAlpha(c)) { label(); }
-                    else { }
+                    else { ReportError(line, $"Unexpected character '{c}'."); }
                     break;
             }
         }

@@ -43,12 +43,6 @@ namespace Ck
             var scanner = new Scanner(source);
             var tokens = scanner.scanTokens();
 
-            if (scanner.hadError)
-            {
-                return 65;
-            }
-
-
             foreach (var token in tokens)
             {
                 Console.WriteLine(token);

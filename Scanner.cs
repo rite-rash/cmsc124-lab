@@ -93,7 +93,7 @@ namespace Ck
             }
             if (atEnd())
             {
-                reportError(line, "Unterminated string. Perhaps you are missing a closing \"?");
+                ReportError(line, "Unterminated string.");
                 return;
             }
             advance(); //consume closing quote
@@ -257,24 +257,9 @@ namespace Ck
                 default:
                     if (isDigit(c)) { numericLiteral(); }
                     else if (isAlpha(c)) { label(); }
-                    else
-                    {
-                        reportError(line, $"Unrecognized character {c}");
-                    }
+                    else { ReportError(line, $"Unexpected character '{c}'."); }
                     break;
             }
-        }
-
-        public bool hadError
-        {
-            get;
-            private set;
-        } = false; //auto set false initially
-
-        private void reportError(int errLine, string errMessage)
-        {
-            hadError = true;
-            Console.Error.WriteLine($"ERROR AT LINE {errLine}: {errMessage}");
         }
 
     }

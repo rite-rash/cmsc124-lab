@@ -44,6 +44,7 @@ namespace Ck
                     return 64; //command line usage error
                 }
             }
+        }
 
 private static int RunFile(string path)
 {

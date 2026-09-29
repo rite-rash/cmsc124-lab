@@ -14,6 +14,14 @@ namespace Ck
         private int current = 0;
         private int line = 1;
 
+        public static bool HadError = false;
+
+        private static void ReportError(int line, string message)
+        {
+            System.Console.Error.WriteLine($"[line {line}] Error: {message}");
+            HadError = true;
+        }
+
         //for lookups of keywords
         private static readonly Dictionary<string, TokenType> Keywords = new()
         {

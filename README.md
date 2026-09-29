@@ -7,8 +7,7 @@
 
 ## Overview
 
-[One paragraph: what the language is for, who would use it, what writing it
-feels like.]
+SoundWave is a music-themed scripting language. Its syntax borrowed terms from music production. How ths works is that a track declares a value, stream outputs it, and an album will group related tracks into a function. The intended flow is for the input to be a number that doubles as a MIDI note number (0-127), so that arithmetic on a track behaves like transposition and for stream to output the result as a note name.
 
 ## Host language and build
 
@@ -85,9 +84,9 @@ NOTE: Precedence and associativity not yet drafted. Will be declared and establi
 
 ### Comments
 
-- Line comments: [token]
-- Block comments: [tokens, or "not supported"]
-- Nesting: [supported or not]
+- Line comments: '//', runs to the end of the line. Discarded by scanner.
+- Block comments: not supported yet for lab1.
+- Nesting: no block comments to nest
 - [Harness note: comment_prefix in tests/lab*/manifest.json is set to the
   token above.]
 
@@ -96,17 +95,21 @@ NOTE: Precedence and associativity not yet drafted. Will be declared and establi
 - Whitespace significant: No. Spaces, tabs, and carriage returns are
   discarded after being consumed.
 - Statement terminator: Semicolon, but not implemented yet.
-- Block delimiters: [e.g. braces, indentation]
-- Grouping delimiters: [e.g. parentheses]
+- Block delimiters: scanned but not yet used recognized as a dellimeter.
+- Grouping delimiters: scanned but not yet used for grouping.
 
 ## Token output format
 
 ```
-[one line of real --tokenize output]
+Token(type=LYRIC, lexeme="Alice", literal=Alice, line=1)
 ```
 
-[What each field means. Frozen as of Lab 1; changes are recorded in the
-changelog.]
+`type` is the token category (keyword, operator, literal, or `LABEL` for an
+identifier), `lexeme` is the raw text as it appeared in the source,
+`literal` is the converted runtime value for number/string tokens and
+`null` for everything else, and `line` is the 1-indexed source line, used
+for error messages. Frozen as of Lab 1; changes are recorded in the
+changelog.
 
 ## Grammar
 
@@ -179,8 +182,8 @@ true.]
 Message format:
 
 ```
-[one real static error]
-[one real runtime error]
+ERROR AT LINE 1: Unrecognized character @
+ERROR AT LINE 1: Unterminated string
 ```
 
 
@@ -236,9 +239,11 @@ Token(type=EOF, lexeme=, literal=null, line=2)
 
 ## Design rationale
 
-[Why the language is the way it is. Cover the choices that surprised you, the
-features you cut, and the decisions you reversed. Specific reasons, not
-approval of your own work.]
+We chose music production as our theme because we found it interesting. To adhere to the theme, we move away from generic keywords like `var` and `print`. `track`and instead replaced the variable declaration with `track` and `stream` for outputy, then `album` for function definition followed from that directly. What took our time was deciding on how to handle our function definitions. Right now, we are inspired on using MIDI for the flow of this program. Our plan for numeric values is to have them double as MIDI note numbers, so that addition and subtraction
+on a track function as transposition, with `stream` responsible for converting the stored number into a note name before printing.
+
+For the scanner, we limited string handling to simple double-quoted literals without escape sequences, and comments to single-line only. Both
+were for the purpose of simplification and to focus more on the logic.
 
 ## Known limitations
 

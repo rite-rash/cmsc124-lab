@@ -14,8 +14,10 @@ public enum TokenType
     LESS_EQUAL,
     GREATER_EQUAL,
 
-    // literals 
+
     LABEL, // identifier
+
+    //literal
     LYRIC,     // string 
     BEAT,       // numeric 
 

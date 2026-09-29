@@ -24,9 +24,26 @@ namespace Ck
             }
             else
             {
-                return 64; //command line usage error
+                if (args.Length == 2 && args[0] == "--tokenize")
+                {
+                    return RunFile(args[1]);
+                }
+                else if (args.Length == 1)
+                {
+                    // Lab 0 legacy:  "./run <path>" with no flag
+                    Console.WriteLine("Hello, World!");
+                    return 0;
+                }
+                else if (args.Length == 0)
+                {
+                    RunRepl();
+                    return 0;
+                }
+                else
+                {
+                    return 64; //command line usage error
+                }
             }
-        }
 
 private static int RunFile(string path)
 {

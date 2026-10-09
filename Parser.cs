@@ -91,6 +91,9 @@ namespace Ck
         private Node primary()
         {
             //mark the node as a literal if it's a number or a string
+            if (match(TokenType.LIVE))return new Literal(true);
+            if (match(TokenType.MUTE))return new Literal(false);
+            if (match(TokenType.REST)) return new Literal(null);
             if (match(TokenType.BEAT, TokenType.LYRIC))
             {
                 return new Literal(previous().Literal);

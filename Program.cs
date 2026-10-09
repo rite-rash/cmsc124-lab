@@ -9,8 +9,8 @@ namespace Ck
         {
             if (args.Length == 2 && args[0] == "--tokenize")
                 return RunFile(args[1]);
-            }
-            else if (args.Length == 1)
+
+            if (args.Length == 1)
             {
                 //lab 0 legacy: "./run <path>" with no flag
                 Console.WriteLine("Hello, World!");
@@ -35,9 +35,8 @@ namespace Ck
             }
             catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
             {
-                return 64; //command line usage error
+                return 66; //cannot open input
             }
-        }
 
             Scanner.HadError = false;
             var tokens = new Scanner(source).scanTokens();

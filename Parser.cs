@@ -7,9 +7,10 @@ namespace Ck
     public class Parser
     {
         private class ParseError : Exception { }
-        public bool HadError { get; private set; }
         private readonly List<Token> tokens;
         private int current = 0;
+
+        
 
         public Parser(List<Token> tokens)
         {
@@ -78,12 +79,10 @@ namespace Ck
 
         private ParseError err(Token token, string msg)
         {
-            string where = token.Type == TokenType.EOF ? "end" : $"'{token.Lexeme}'";
-            Console.Error.WriteLine($"[line {token.Line}] Error at {where}: {msg}");
-            HadError = true;
+            string loc = token.Type == TokenType.EOF ? "end" : "'" + token.Lexeme + "'";
+            Errors.ReportError(token.Line, "In Line" + loc + ":" + msg); //included line number
             return new ParseError();
         }
-
 
         //rules
         private Node primary()
@@ -100,15 +99,40 @@ namespace Ck
             if (match(TokenType.LEFT_PAREN))
             { 
                 Node exp = expression();
-                consume(TokenType.RIGHT_PAREN, "Expects ')' after expression"); // consume until closiing paren found
+                consume(TokenType.RIGHT_PAREN, "Expected ')' after expression"); // consume until closiing paren found
                 Node newExpression = new Grouping(exp);
                 return newExpression;
             }
 
             //if none matched
-            throw err(peek(), "Expect expression.");
+            throw err(peek(), "Expected expression.");
 
 
+        }
+
+        private Node equality()
+        {
+            Node expr = comparison();
+            while (match(TokenType.CHECK_IF, TokenType.EQUAL_EQUAL))
+            {
+                Token op = previous();
+                Node right = comparison();
+                expr = new Binary(expr, op, right);
+            }
+            return expr;
+        }
+
+        private Node comparison()
+        {
+            Node expr = term();
+            while (match(TokenType.GREATER, TokenType.GREATER_EQUAL,
+                        TokenType.LESS, TokenType.LESS_EQUAL))
+            {
+                Token op = previous();
+                Node right = term();
+                expr = new Binary(expr, op, right);
+            }
+            return expr;
         }
 
         private Node expression() => term();

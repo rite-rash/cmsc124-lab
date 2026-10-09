@@ -28,7 +28,12 @@ namespace Ck
             { "track", TokenType.TRACK }, //var
             { "stream", TokenType.STREAM },//print
             {"album", TokenType.ALBUM }, //function
-            {"repeat", TokenType.REPEAT}
+            {"repeat", TokenType.REPEAT }, //loop
+            { "live", TokenType.LIVE },     // true
+            { "mute", TokenType.MUTE },     // false
+            { "rest", TokenType.REST },     // nil
+            { "chord", TokenType.CHORD },   // and
+            { "solo", TokenType.SOLO }      // or
         };
 
         // for creating an object Scanner

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Security.Principal;
 using System.Text.Json;
@@ -7,6 +8,8 @@ namespace Ck
 {
     public class Parser
     {
+        private class ParseError : Exception { }
+        public bool HadError { get; private set; }
         private readonly List<Token> tokens;
         private int current = 0;
 
@@ -75,10 +78,12 @@ namespace Ck
         }
 
 
-        private Exception err(Token token, String msg)
+        private ParseError err(Token token, string msg)
         {
-            Console.Error.WriteLine($"[Line {token.Line}] Error: {msg}");
-            throw new Exception(msg);
+            string where = token.Type == TokenType.EOF ? "end" : $"'{token.Lexeme}'";
+            Console.Error.WriteLine($"[line {token.Line}] Error at {where}: {msg}");
+            HadError = true;
+            return new ParseError();
         }
 
 
@@ -100,28 +105,77 @@ namespace Ck
             }
 
             //if none matched
-            Console.Error.WriteLine($"[line {peek().Line}] Error: Expect expression.");
-            throw new Exception("Expect expression.");
+            throw err(peek(), "Expect expression.");
 
 
         }
 
         private Node expression() => term();
-        
+
         private Node term()
         {
-            Node expr = primary(); 
+            Node expr = factor();
             while (match(TokenType.MINUS, TokenType.MIX))
-                {
-                    Token op = previous();
-                    Node right = primary();
-                    expr = new Binary(expr, op, right);
-                }
+            {
+                Token op = previous();
+                Node right = factor();
+                expr = new Binary(expr, op, right);
+            }
 
             return expr;
         }
 
-        public Node parse() => expression();
+
+        private Node factor()
+        {
+            Node expr = unary();
+            while (match(TokenType.SLASH, TokenType.STAR))
+            {
+                Token op= previous();
+                Node right = unary();
+                expr=new Binary(expr, op, right);
+            }
+            return expr;
+        }
+
+
+        private Node unary()
+        {
+            if (match(TokenType.BANG, TokenType.MINUS))
+            {
+                Token op= previous();
+                Node right = unary();        
+                return new Unary(op, right);
+            }
+            return primary();
+        }
+
+        public List<Node> parse()
+        {
+            var results = new List<Node>();
+            while (!atEnd())
+            {
+                try
+                {
+                    results.Add(expression());
+                    if (!atEnd() && peek().Line == previous().Line)
+                        throw err(peek(), "Expect end of line after expression.");
+                }
+                catch (ParseError)
+                {
+                    synchronize();
+                }
+            }
+            return results;
+        }
+
+        private void synchronize()
+        {
+            int errLine = peek().Line;
+            advance();
+            while (!atEnd() && peek().Line == errLine)
+                advance();
+        }
 
     }
 

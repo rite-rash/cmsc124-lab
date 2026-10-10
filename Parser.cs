@@ -80,7 +80,7 @@ namespace Ck
         private ParseError err(Token token, string msg)
         {
             string loc = token.Type == TokenType.EOF ? "end" : "'" + token.Lexeme + "'";
-            Errors.ReportError(token.Line, "In Line" + loc + ":" + msg); //included line number
+            Errors.ReportError(token.Line, "at " + loc + ": " + msg);
             return new ParseError();
         }
 
@@ -135,7 +135,7 @@ namespace Ck
             return expr;
         }
 
-        private Node expression() => term();
+        private Node expression() => equality();
 
         private Node term()
         {

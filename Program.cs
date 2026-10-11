@@ -32,6 +32,10 @@ namespace Ck
                 return RunParse(args[1]);
             }
 
+            if (args.Length == 2 && args[0] == "--parse")
+                return RunParseFile(args[1]);
+
+
             if (args.Length == 1)
             {
                 //lab 0 legacy: "./run <path>" with no flag
@@ -114,5 +118,37 @@ namespace Ck
                 }
             }
         }
+
+
+        private static int RunParseFile(string path)
+        {
+            string source;
+            try
+            {
+                source = File.ReadAllText(path);
+            }
+            catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
+            {
+                return 66;
+            }
+
+            Scanner.HadError = false;
+            var tokens = new Scanner(source).scanTokens();
+
+            if (Scanner.HadError)
+                return 65;
+
+            var parser = new Parser(tokens);
+            var expressions = parser.parse();
+
+            if (Errors.HadError)  
+                return 65;
+
+            foreach (var expr in expressions)
+                Console.WriteLine(AstPrinter.Print(expr));
+
+            return 0;
+        }
+
     }
 }

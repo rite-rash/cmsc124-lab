@@ -42,6 +42,13 @@ namespace Ck
 
         }
 
+        private bool matchSameLine(params TokenType[] types)
+        {
+            if (!atEnd() && peek().Line != previous().Line)
+                return false;
+            return match(types);
+        }
+
         private bool check(TokenType type)
         {
             if (atEnd())
@@ -129,12 +136,12 @@ namespace Ck
             return expr;
         }
 
-        private Node expression() => term();
+        private Node expression() => equality();
 
         private Node term()
         {
             Node expr = factor();
-            while (match(TokenType.MINUS, TokenType.MIX))
+            while (matchSameLine(TokenType.MINUS, TokenType.MIX))
             {
                 Token op = previous();
                 Node right = factor();

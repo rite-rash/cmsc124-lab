@@ -242,7 +242,7 @@ namespace Ck
                     break;
 
                 case ';': 
-                    addToken(TokenType.SEMICOLON); 
+                        addToken(TokenType.SEMICOLON); 
                     break;
 
 

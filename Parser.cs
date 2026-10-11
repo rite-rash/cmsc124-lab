@@ -84,32 +84,33 @@ namespace Ck
         }
 
 
-        //rules
-        private Node primary()
-        {
-            //mark the node as a literal if it's a number or a string
-            if (match(TokenType.LIVE))return new Literal(true);
-            if (match(TokenType.MUTE))return new Literal(false);
-            if (match(TokenType.REST)) return new Literal(null);
-            if (match(TokenType.BEAT, TokenType.LYRIC))
+        //------- RULES ------
+        private Node expression() => logicOr();
+
+        //under equality grammar
+            private Node logicOr()
             {
-                return new Literal(previous().Literal);
+                Node expr = logicAnd();
+                while (match(TokenType.SOLO))
+                {
+                    Token op = previous();
+                    Node right = logicAnd();
+                    expr = new Binary(expr, op, right);
+                }
+                return expr;
             }
-            // tries to group and create expression of valid when seen open paren
-            if (match(TokenType.LEFT_PAREN))
-            { 
-                Node exp = expression();
-                consume(TokenType.RIGHT_PAREN, "Expected ')' after expression"); // consume until closiing paren found
-                Node newExpression = new Grouping(exp);
-                return newExpression;
+
+            private Node logicAnd()
+            {
+                Node expr = equality();
+                while (match(TokenType.CHORD))
+                {
+                    Token op = previous();
+                    Node right = equality();
+                    expr = new Binary(expr, op, right);
+                }
+                return expr;
             }
-
-            //if none matched
-            Errors.ReportError(peek().Line, "Expect expression.");
-            throw new Exception("Expect expression.");
-
-
-        }
 
         private Node equality()
         {
@@ -135,8 +136,6 @@ namespace Ck
             }
             return expr;
         }
-
-        private Node expression() => equality();
 
         private Node term()
         {
@@ -176,6 +175,32 @@ namespace Ck
             return primary();
         }
 
+        private Node primary()
+        {
+            //mark the node as a literal if it's a number or a string
+            if (match(TokenType.LIVE))return new Literal(true);
+            if (match(TokenType.MUTE))return new Literal(false);
+            if (match(TokenType.REST)) return new Literal(null);
+            if (match(TokenType.BEAT, TokenType.LYRIC))
+            {
+                return new Literal(previous().Literal);
+            }
+            // tries to group and create expression of valid when seen open paren
+            if (match(TokenType.LEFT_PAREN))
+            { 
+                Node exp = expression();
+                consume(TokenType.RIGHT_PAREN, "Expected ')' after expression"); // consume until closiing paren found
+                Node newExpression = new Grouping(exp);
+                return newExpression;
+            }
+
+            //if none matched
+            Errors.ReportError(peek().Line, "Expected expression.");
+            throw new Exception("Expected expression.");
+
+
+        }
+
         public List<Node> parse()
         {
             var nodes = new List<Node>();
@@ -184,7 +209,7 @@ namespace Ck
                 try
                 {
                     Node expr = expression();
-                    consume(TokenType.SEMICOLON, "Expect ';' after expression.");
+                    consume(TokenType.SEMICOLON, "Expected ';' after expression.");
                     nodes.Add(expr);
                 }
                 catch (Exception)

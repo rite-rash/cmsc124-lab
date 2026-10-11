@@ -20,8 +20,8 @@ namespace Ck
             string literalS = (Literal == null) ? "null" : Literal.ToString();
 
             //clean for output
-            string safeLex = Lexeme.Replace("\n", "\\n");
-            string safeLit = literalS.Replace("\n", "\\n");
+            string safeLex = Lexeme.Replace("\r\n", "\\n").Replace("\n", "\\n");
+            string safeLit = literalS.Replace("\r\n", "\\n").Replace("\n", "\\n");
 
             return $"Token(type={Type}, lexeme={safeLex}, literal={safeLit}, line={Line})";
         }

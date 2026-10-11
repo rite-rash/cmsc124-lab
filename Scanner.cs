@@ -10,17 +10,10 @@ namespace Ck
         // memory states
         private readonly string _source;
         private readonly List<Token> _tokens = new List<Token>();
+
         private int start = 0;
         private int current = 0;
         private int line = 1;
-
-        public static bool HadError = false;
-
-        private static void ReportError(int line, string message)
-        {
-            System.Console.Error.WriteLine($"[line {line}] Error: {message}");
-            HadError = true;
-        }
 
         //for lookups of keywords
         private static readonly Dictionary<string, TokenType> Keywords = new()
@@ -98,7 +91,7 @@ namespace Ck
             }
             if (atEnd())
             {
-                ReportError(line, "Unterminated string.");
+                Errors.ReportError(line, "Unterminated string. Perhaps you are missing a closing \"?");
                 return;
             }
             advance(); //consume closing quote
@@ -248,6 +241,10 @@ namespace Ck
                     }
                     break;
 
+                case ';': 
+                    addToken(TokenType.SEMICOLON); 
+                    break;
+
 
                 //special cases
                 case ' ':
@@ -262,7 +259,7 @@ namespace Ck
                 default:
                     if (isDigit(c)) { numericLiteral(); }
                     else if (isAlpha(c)) { label(); }
-                    else { ReportError(line, $"Unexpected character '{c}'."); }
+                    else { Errors.ReportError(line, $"Unexpected character '{c}'."); }
                     break;
             }
         }

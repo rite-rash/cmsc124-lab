@@ -6,7 +6,6 @@ namespace Ck
 {
     public class Parser
     {
-        private class ParseError : Exception { }
         private readonly List<Token> tokens;
         private int current = 0;
 
@@ -80,16 +79,10 @@ namespace Ck
         private Token consume(TokenType type, String msg)
         {
             if (check(type)) return advance();
-            throw err(peek(), msg);
+            Errors.ReportError(peek().Line, msg);
+            throw new Exception(msg);
         }
 
-
-        private ParseError err(Token token, string msg)
-        {
-            string loc = token.Type == TokenType.EOF ? "end" : "'" + token.Lexeme + "'";
-            Errors.ReportError(token.Line, "at " + loc + ": " + msg);
-            return new ParseError();
-        }
 
         //rules
         private Node primary()
@@ -112,7 +105,8 @@ namespace Ck
             }
 
             //if none matched
-            throw err(peek(), "Expected expression.");
+            Errors.ReportError(peek().Line, "Expect expression.");
+            throw new Exception("Expect expression.");
 
 
         }
@@ -176,7 +170,7 @@ namespace Ck
             if (match(TokenType.BANG, TokenType.MINUS))
             {
                 Token op= previous();
-                Node right = unary();        
+                Node right = unary();
                 return new Unary(op, right);
             }
             return primary();
@@ -184,29 +178,31 @@ namespace Ck
 
         public List<Node> parse()
         {
-            var results = new List<Node>();
+            var nodes = new List<Node>();
             while (!atEnd())
             {
                 try
                 {
-                    results.Add(expression());
-                    if (!atEnd() && peek().Line == previous().Line)
-                        throw err(peek(), "Expect end of line after expression.");
+                    Node expr = expression();
+                    consume(TokenType.SEMICOLON, "Expect ';' after expression.");
+                    nodes.Add(expr);
                 }
-                catch (ParseError)
+                catch (Exception)
                 {
                     synchronize();
                 }
             }
-            return results;
+            return nodes;
+
+            
         }
 
         private void synchronize()
         {
-            int errLine = peek().Line;
-            advance();
-            while (!atEnd() && peek().Line == errLine)
-                advance();
+            while (!atEnd())
+            {
+                if (advance().Type == TokenType.SEMICOLON) return;
+            }
         }
 
     }

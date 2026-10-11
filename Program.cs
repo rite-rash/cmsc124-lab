@@ -93,7 +93,7 @@ namespace Ck
             var parser = new Parser(tokens);
             var expressions = parser.parse();
 
-            if (Errors.HadError)   // or whatever flag your parser's error reporting sets
+            if (Errors.HadError)  
                 return 65;
 
             foreach (var expr in expressions)

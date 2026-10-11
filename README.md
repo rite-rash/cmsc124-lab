@@ -41,12 +41,15 @@ Exit codes: 0 [clean scan], 65 [unrecognized character, unterminated string], 70
 
 | Keyword | Purpose | Status |
 |---|---|---|
-| `track` | variable declaration | implemented |
-| `stream` | output statement | implemented |
-| `album` | function definition | implemented (parsing not yet built) |
-| `repeat` | loop | implemented (parsing not yet built) |
-|
-
+| `track` | variable declaration | (parsiong not implemented) |
+| `stream` | output statement | (parsiong not implemented)  |
+| `album` | function definition | (parsiong not implemented)  |
+| `repeat` | loop | (parsiong not implemented) |
+| `live` | boolean true | implemented |
+| `mute` | boolean false | implemented |
+| `rest` | nil | implemented |
+| `chord` | logical and | implemented |
+| `solo` | logical or | implemented |
 
 
 ### Operators
@@ -63,7 +66,6 @@ Exit codes: 0 [clean scan], 65 [unrecognized character, unterminated string], 70
 | `!=` | not-equal |
 | `<` `<=` `>` `>=` | comparison |
 
-NOTE: Precedence and associativity not yet drafted. Will be declared and established during Lab 2.
 
 
 ### Literals
@@ -72,7 +74,8 @@ NOTE: Precedence and associativity not yet drafted. Will be declared and establi
 |---|---|---|
 | number | `4`, `3.14` | a `double` |
 | string | `"hello"` (no escape sequences supported) | a `string` |
-|
+| boolean | `live`, `mute`, |a `bool` |
+|nil | `rest`| a `null`|
 
 ### Identifiers
 
@@ -112,20 +115,19 @@ for error messages. Frozen as of Lab 1; changes are recorded in the
 changelog.
 
 ## Grammar
-
-```
-[Your complete context-free grammar, current as of the latest activity.
-Unambiguous, with precedence and associativity encoded in rule structure.]
-```
+expression → equality
+equality → comparison ( ( "!=" | "==" ) comparison )*
+comparison → term ( ( ">" | ">=" | "<" | "<=" ) term )*
+term → factor ( ( "-" | "+" ) factor )*
+factor → unary ( ( "/" | "*" ) unary )*
+unary → ( "!" | "-" ) unary | primary
+primary → NUMBER | STRING | "live" | "mute" | "rest" | "(" expression ")"
 
 ## Parse output format
+``` (+ 2.0 (* 3.0 4.0)) ```
 
-```
-[one line of real --parse output, e.g. (+ 1.0 (* 2.0 3.0))]
-```
-
-- Groupings print as: [form]
-- Numbers print as: [form]
+- Groupings print as: `group( ...) `
+- Numbers print as: ```1.0, 3.0```
 
 ## Semantics
 
@@ -171,7 +173,6 @@ true.]
 
 ## Native functions
 
-
 | Name | Arguments | Returns | Notes |
 |---|---|---|---|
 | [name] | [count and types] | [type] | [caveats] |
@@ -182,8 +183,7 @@ true.]
 Message format:
 
 ```
-ERROR AT LINE 1: Unrecognized character @
-ERROR AT LINE 1: Unterminated string
+[line 1] Error at 'live': Expect expression.
 ```
 
 
@@ -205,9 +205,71 @@ ERROR AT LINE 1: Unterminated string
 | tests/lab4 | Context | inline | none |
 | tests/lab5 | Functions | inline | none |
 
-
 ```
 [specific tests]...
+```
+
+```
+└── 📁tests
+    └── 📁lab0
+        ├── hello.expected
+        ├── hello.play
+        ├── manifest.json
+    └── 📁lab1
+        └── 📁errors
+            ├── unrecognized.exit
+            ├── unrecognized.expected
+            ├── unrecognized.play
+            ├── unterminated.exit
+            ├── unterminated.expected
+            ├── unterminated.play
+        └── 📁strings
+            ├── basics.expected
+            ├── basics.play
+            ├── escapes.expected
+            ├── escapes.play
+            ├── multiline.expected
+            ├── multiline.play
+        ├── comments.expected
+        ├── comments.play
+        ├── keywords.expected
+        ├── keywords.play
+        ├── manifest.json
+        ├── numbers.expected
+        ├── numbers.play
+        ├── operators.expected
+        ├── operators.play
+    └── 📁lab2
+        └── 📁errors
+            ├── bad-token.exit
+            ├── bad-token.expected
+            ├── bad-token.play
+            ├── missing-operand.exit
+            ├── missing-operand.expected
+            ├── missing-operand.play
+            ├── unclosed-paren.exit
+            ├── unclosed-paren.expected
+            └── unclosed-paren.play
+        ├── grouping.exit
+        ├── grouping.expected
+        ├── grouping.play
+        ├── left-assoc.exit
+        ├── left-assoc.expected
+        ├── left-assoc.play
+        ├── literals.exit
+        ├── literals.expected
+        ├── literals.play
+        ├── manifest.json
+        ├── mixed.exit
+        ├── mixed.expected
+        ├── mixed.play
+        ├── precedence.exit
+        ├── precedence.expected
+        ├── precedence.play
+        ├── unary.exit
+        ├── unary.expected
+        ├── unary.play
+
 ```
 
 Run locally with:
@@ -248,14 +310,15 @@ were for the purpose of simplification and to focus more on the logic.
 ## Known limitations
 
 - Escape sequences inside strings are not supported.
-- Boolean and nil-like literals do not yet exist.
 - No explicit statement terminator token yet exists.
 - `album` (functions) and `repeat` (loops) are recognized as keywords but
   do not do anything yet.
 - Operator precedence and associativity are not yet finalized.
+- `chord` (and) and `solo` (or) are recognized as keywords but not yet used in the grammar.
 
 ## Changelog
 
 | Activity | What changed in the language |
 |---|---|
 | Lab 1 | Scanner implemented |
+| Lab 2 | Parser implemented, Added live/mute/rest as boolean and nil literals: 

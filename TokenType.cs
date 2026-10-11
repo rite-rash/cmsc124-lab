@@ -5,7 +5,7 @@ namespace Ck;
 public enum TokenType
 {
     //single charater
-    LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE,
+    LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE, SEMICOLON,
     MIX, MINUS, STAR, SLASH, EQUAL, BANG, LESS, GREATER,
 
     //multi-character
@@ -14,8 +14,10 @@ public enum TokenType
     LESS_EQUAL,
     GREATER_EQUAL,
 
-    // literals 
+
     LABEL, // identifier
+
+    //literal
     LYRIC,     // string 
     BEAT,       // numeric 
 
@@ -24,6 +26,11 @@ public enum TokenType
     STREAM,     // output statement
     ALBUM,      // function definition 
     REPEAT,     //loop
+    LIVE,       //true
+    MUTE,       //false
+    REST,       //null/nil
+    CHORD,      //and
+    SOLO,        //or
 
     EOF //end
 

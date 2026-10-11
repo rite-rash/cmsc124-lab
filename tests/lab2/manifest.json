@@ -1,0 +1,5 @@
+{
+    "ext": ".play",
+    "flag": "--parse",
+    "mode": "sidecar"
+}

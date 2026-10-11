@@ -1,0 +1,2 @@
+Token(type=LYRIC, lexeme="hello\nworld", literal=hello\nworld, line=4)
+Token(type=EOF, lexeme=, literal=null, line=4)

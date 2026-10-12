@@ -131,19 +131,32 @@ Unambiguous, with precedence and associativity encoded in rule structure.]
 
 ### Values and types
 
-[What runtime values exist, and how they are represented in the host
-language.]
+A runtime value is one of four kinds, stored in the
+host language as a single `object`:
+
+
+ 
+SOUNDWAVE value | Host representation |
+|---|---|
+| number | `double` |
+| string | `string` |
+| boolean (`live`, `mute`) | `bool` |
+| nil (`rest`) | `null` |
+
 
 ### Value printing
 
-- Numbers: [e.g. 5 rather than 5.0]
-- Nil: [spelling]
-- Strings: [with or without quotes]
+- **Numbers** always print with a decimal point: `2 + 3` prints `5.0`, and
+  `7 / 2` prints `3.5`. 
+- **Nil** prints as `rest`. (confirm)
+- **Booleans** print as `live` and `mute`. (confirm)
+- **Strings** print without quotes: `"hi" + " there"` prints `hi there`.
+ 
 
 ### Truthiness
 
-[The complete rule. Which values are false in a condition; everything else is
-true.]
+`mute` and `rest` are the only values that are falsey, following the rule Lox uses. Every other value is
+truthy, including `0` and an empty string. 
 
 ### Operator semantics
 
@@ -152,7 +165,7 @@ true.]
 - Mixed types: [what happens]
 - Comparison: [accepted operand types]
 - Equality across types: [false, or an error]
-- Division by zero: [value produced, or runtime error]
+- Division by zero: runtime error, so SOUNDWAVE rejects it deliberately.
 
 ### Scope and bindings
 

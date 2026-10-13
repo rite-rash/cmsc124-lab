@@ -1,4 +1,7 @@
 
+//DESCRIPTION: define all valid token types (categ)
+//      - an enum assigns symbolic label to each syntax element (like the keys for mapping later )
+
 
 namespace Ck;
 

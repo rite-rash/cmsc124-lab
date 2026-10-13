@@ -11,26 +11,28 @@ namespace Ck
         private static List<Node>? checkSource(string source)
         {
             var tokens = new Scanner(source).scanTokens();
-            if (Errors.HadError){
+            if (Errors.HadError)
+            {
                 return null;
             }
+            //parse token to a list of expression tree
             var nodes = new Parser(tokens).parse();
 
             if (Errors.HadError){
                 return null;
             }
 
-            return nodes;
+            return nodes; //if success, return the parsed tree
         }
-        //command line
+        //red command line flag
         public static int Main(string[] args)
         {
             if (args.Length == 2 && args[0] == "--tokenize")
                 return RunScan(args[1]);
             else if (args.Length == 2 && args[0] == "--parse")
-            {
                 return RunParse(args[1]);
-            }
+            else if (args.Length == 2 && args[0] == "--eval")
+                return RunEval(args[1]);
 
             if (args.Length == 1)
             {
@@ -71,7 +73,7 @@ namespace Ck
 
             return 0;
         }
-//parser
+        //parser
         private static int RunParse(string path)
         {
             string source;
@@ -85,9 +87,11 @@ namespace Ck
             }
 
             var nodes = checkSource(source);
-            if (nodes == null) {
+            if (nodes == null)
+            {
                 return 65;
-            };
+            }
+            ;
 
             foreach (var node in nodes)
                 Console.WriteLine(AstPrinter.Print(node));
@@ -95,6 +99,40 @@ namespace Ck
             return 0;
         }
 
+        //evaluator
+        private static int RunEval(string path)
+        {
+            string source;
+            try
+            {
+                source = File.ReadAllText(path);
+            }
+            catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
+            {
+                return 66;
+            }
+
+            var nodes = checkSource(source);
+            if (nodes == null)
+                return 65;
+
+            var evaluator = new Evaluator();
+
+            try
+            {
+                foreach (var node in nodes)
+                {
+                    object? value = evaluator.evaluate(node);
+                }
+            }
+            catch (RuntimeError e)
+            {
+                Console.Error.WriteLine($"[line {e.Operator.Line}] Runtime error: {e.Message}");
+                return 70;
+            }
+
+            return 0;
+        }
 
         private static void RunRepl()
         {

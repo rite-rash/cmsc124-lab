@@ -1,3 +1,6 @@
+//DESCRIPTION: takes raw source code text and converts it into a list of structured Token objects
+
+
 using System.Collections.Generic;
 using System.Security.Principal;
 using System.Text;

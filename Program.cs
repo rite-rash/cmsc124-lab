@@ -8,19 +8,20 @@ namespace Ck
     {
 
 //------ HELPER ------
-        private static List<Node>? checkSource(string source)
+        private static Tree? checkSource(string source)
         {
             var tokens = new Scanner(source).scanTokens();
             if (Errors.HadError){
                 return null;
             }
-            var nodes = new Parser(tokens).parse();
+
+            Tree tree = new Parser(tokens).parse();
 
             if (Errors.HadError){
                 return null;
             }
 
-            return nodes;
+            return tree;
         }
         //command line
         public static int Main(string[] args)
@@ -84,14 +85,11 @@ namespace Ck
                 return 66; //cannot open input
             }
 
-            var nodes = checkSource(source);
-            if (nodes == null) {
-                return 65;
-            };
+            var tree = checkSource(source);
+            if (tree == null) return 65;
 
-            foreach (var node in nodes)
-                Console.WriteLine(AstPrinter.Print(node));
-
+            foreach (var expr in tree.Expressions)
+                Console.WriteLine(AstPrinter.Print(expr));
             return 0;
         }
 
@@ -105,13 +103,11 @@ namespace Ck
                 if (line is null) break; //EOF
 
                 Errors.Reset();
-                var nodes = checkSource(line);
-                if (nodes == null) continue;
+                var Tree = checkSource(line);
+                if (Tree == null) continue;
 
-                foreach (var node in nodes)
-                {
-                    Console.WriteLine(AstPrinter.Print(node));
-                }
+                foreach (var expr in Tree.Expressions)
+                    Console.WriteLine(AstPrinter.Print(expr));
             }
         }
 

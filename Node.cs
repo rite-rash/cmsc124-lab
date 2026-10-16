@@ -1,4 +1,4 @@
-//DESCRIPTION: defines AST node structures and Grouping
+//DETreeION: defines AST node structures and Grouping
 
 namespace Ck
 {
@@ -48,6 +48,17 @@ namespace Ck
         {
             Operator = op;
             Right = right;
+        }
+    }
+
+    //get root of the parsed:
+    public class Tree : Node
+    {
+        public List<Node> Expressions { get; }
+
+        public Tree(List<Node> expressions)
+        {
+            Expressions = expressions;
         }
     }
 }

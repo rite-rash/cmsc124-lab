@@ -201,7 +201,7 @@ namespace Ck
 
         }
 
-        public List<Node> parse()
+        public Tree parse()
         {
             var nodes = new List<Node>();
             while (!atEnd())
@@ -217,7 +217,7 @@ namespace Ck
                     synchronize();
                 }
             }
-            return nodes;
+            return new Tree(nodes);
 
             
         }

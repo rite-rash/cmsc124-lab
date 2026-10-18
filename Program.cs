@@ -107,26 +107,18 @@ namespace Ck
                 return 66;
             }
 
-            var nodes = checkSource(source);
-            if (nodes == null)
-                return 65;
+            var tree = checkSource(source);
+            if (tree == null) return 65;
 
             var evaluator = new Evaluator();
-
-            try
+            foreach (var expr in tree.Expressions)
             {
-                foreach (var node in nodes)
-                {
-                    object? value = evaluator.evaluate(node);
-                }
+                string? text = evaluator.interpret(expr);
+                if (text == null) return 70;
+                Console.WriteLine(text);
             }
-            catch (RuntimeError e)
-            {
-                Console.Error.WriteLine($"[line {e.Operator.Line}] Runtime error: {e.Message}");
-                return 70;
-            }
-
             return 0;
+
         }
 
         private static void RunRepl()

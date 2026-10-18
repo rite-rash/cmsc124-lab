@@ -1,3 +1,5 @@
+//DESCRIPTION: takes the Abstract Syntax Tree (AST) built by the parser and converts it into a human-readable text string.
+
 using System;
 using System.Globalization;
 using System.Text;

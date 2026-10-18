@@ -1,9 +1,12 @@
-//DETreeION: defines AST node structures and Grouping
+//DESCRIPTION: abstract calss for polymorphism
+//              blueprint is made for node objects
+
 
 namespace Ck
 {
+
     public abstract class Node
-    {}
+    { }
 
     public class Literal : Node
     {

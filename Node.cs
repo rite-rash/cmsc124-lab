@@ -53,4 +53,15 @@ namespace Ck
             Right = right;
         }
     }
+
+    //get root of the parsed:
+    public class Tree : Node
+    {
+        public List<Node> Expressions { get; }
+
+        public Tree(List<Node> expressions)
+        {
+            Expressions = expressions;
+        }
+    }
 }

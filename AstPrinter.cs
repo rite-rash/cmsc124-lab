@@ -48,7 +48,7 @@ namespace Ck
         }
 
         //numbers always show decimal points (ADD TO README)
-        private static string PrintNumber(double d)
+        internal static string PrintNumber(double d)
         {
             string s = d.ToString(CultureInfo.InvariantCulture);
             bool plain = s.IndexOfAny(new[] { '.', 'E', 'N', 'I' }) < 0;

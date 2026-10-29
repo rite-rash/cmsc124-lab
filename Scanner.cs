@@ -180,6 +180,7 @@ namespace Ck
                 case '+': addToken(TokenType.MIX); break;
                 case '-': addToken(TokenType.MINUS); break;
                 case '*': addToken(TokenType.STAR); break;
+                case ':': addToken(TokenType.COLON); break; 
                 case '"':
                     stringLiteral();
                     break;

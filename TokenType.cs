@@ -9,7 +9,7 @@ public enum TokenType
 {
     //single charater
     LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE, SEMICOLON,
-    MIX, MINUS, STAR, SLASH, EQUAL, BANG, LESS, GREATER,
+    MIX, MINUS, STAR, SLASH, EQUAL, BANG, LESS, GREATER, COLON,
 
     //multi-character
     EQUAL_EQUAL,

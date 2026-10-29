@@ -16,8 +16,14 @@ namespace Ck
             return true;        //default
         }
 
-        private bool isEqual(object? a, object? b) => Equals(a, b); //compares by value, since == uses references
-
+        private bool isEqual(object? a, object? b)
+        {
+            if (a is double d && b is string s)
+                return double.TryParse(s, out var n) && d == n; // tries to parse string to number and compares it
+            if (a is string && b is double)
+                return isEqual(b, a);
+            return Equals(a, b);
+        }
 
         //check node type, recursion
         public object? evaluate(Node node)
@@ -70,7 +76,7 @@ namespace Ck
                 case TokenType.GREATER_EQUAL: checkNumberOperands(op, left, right); return (double)left! >= (double)right!;
                 case TokenType.LESS:          checkNumberOperands(op, left, right); return (double)left! <  (double)right!;
                 case TokenType.LESS_EQUAL:    checkNumberOperands(op, left, right); return (double)left! <= (double)right!;
-                case TokenType.EQUAL_EQUAL:   return isEqual(left, right);
+                case TokenType.EQUAL_EQUAL:   return isEqual (left, right);
                 case TokenType.CHECK_IF:      return !isEqual(left, right);
             }
             throw new RuntimeError(op, "Unknown binary operator.");

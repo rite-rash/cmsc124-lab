@@ -64,8 +64,8 @@ namespace Ck
             {
                 case TokenType.MIX:
                     if (left is double && right is double) return (double)left! + (double)right!;
-                    if (left is string || right is string) return (string)left! + (string)right!;
-                    throw new RuntimeError(op, "Operands must be two numbers or two strings.");
+                    if (left is string || right is string) return stringify(left) + stringify(right);
+                    throw new RuntimeError(op, "Operands must be two numbers, or at least one string.");
                 case TokenType.MINUS: checkNumberOperands(op, left, right); return (double)left! - (double)right!;
                 case TokenType.STAR: checkNumberOperands(op, left, right); return (double)left! * (double)right!;
                 case TokenType.SLASH:

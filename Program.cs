@@ -123,19 +123,28 @@ namespace Ck
 
         private static void RunRepl()
         {
+            var evaluator = new Evaluator();
+
             while (true)
             {
                 Console.Write("> ");
                 string? line = Console.ReadLine();
-                if (line is null) break; //EOF
+                if (line is null) 
+                    break; //EOF
 
                 Errors.Reset();
-                var Tree = checkSource(line);
-                if (Tree == null) continue;
+                var tree = checkSource(line);
+                if (tree == null) 
+                    continue;
 
-                foreach (var expr in Tree.Expressions)
-                    Console.WriteLine(AstPrinter.Print(expr));
-            }
+                foreach (var expr in tree.Expressions)
+                {
+                    string? text = evaluator.interpret(expr);
+                    if (text == null) 
+                    break;
+                    Console.WriteLine(text);
+                }
+        }
         }
 
 

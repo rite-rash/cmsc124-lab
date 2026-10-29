@@ -36,9 +36,7 @@ namespace Ck
 
             if (args.Length == 1)
             {
-                //lab 0 legacy: "./run <path>" with no flag
-                Console.WriteLine("Hello, World!");
-                return 0;
+                return RunFile(args[0]);
             }
 
             if (args.Length == 0)
@@ -121,6 +119,31 @@ namespace Ck
 
         }
 
+        private static int RunFile(string path) {
+            string source;
+            try
+            {
+                source = File.ReadAllText(path);
+            }
+            catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
+            {
+                return 66;
+            }
+            var tokens = new Scanner(source).scanTokens();
+            if (Errors.HadError) return 65;
+
+            //just report errors abd dont print any
+            var statements = new Parser(tokens).parseProgram();
+            if (Errors.HadError) return 65;
+
+            var evaluator = new Evaluator();
+            foreach (var stmt in statements)
+            {
+                if (!evaluator.execute(stmt)) return 70; 
+            }
+            return 0;
+        }
+
         private static void RunRepl()
         {
             var evaluator = new Evaluator();
@@ -129,22 +152,22 @@ namespace Ck
             {
                 Console.Write("> ");
                 string? line = Console.ReadLine();
-                if (line is null) 
+                if (line is null)
                     break; //EOF
 
                 Errors.Reset();
                 var tree = checkSource(line);
-                if (tree == null) 
+                if (tree == null)
                     continue;
 
                 foreach (var expr in tree.Expressions)
                 {
                     string? text = evaluator.interpret(expr);
-                    if (text == null) 
-                    break;
+                    if (text == null)
+                        break;
                     Console.WriteLine(text);
                 }
-        }
+            }
         }
 
 

@@ -102,6 +102,7 @@ namespace Ck
             throw new RuntimeError(op, "Operands must be numbers.");
         }
 
+        //handles only a node
         public string? interpret(Node node)
         {
             try { return stringify(evaluate(node)); }
@@ -111,6 +112,41 @@ namespace Ck
                 return null;
             }
         }
+
+        //runs one ast statement then returns status
+        public bool execute(Statement statement)
+        {
+            try
+            {
+
+                switch (statement)
+                //check if the statement is under subclass stream or espression which was under abstract
+                {
+                    //use stringify and print if steam then if expression just eval without printing
+                    case StreamStatement ss: Console.WriteLine(stringify(evaluate(ss.Expression))); break;
+                    case ExpressionStatement es: evaluate(es.Expression); break;
+                }
+                return true;
+            }
+            catch (RuntimeError e)
+            {
+                Errors.ReportRuntimeError(e.Operator.Line, e.Message);
+                return false;
+            }
+        }
+        
+        //handles multiple statements and stops when the execute flag is false
+        public void interpret(List<Statement> statements)
+        {
+            foreach (Statement statement in statements)
+            {
+                bool success = execute(statement);
+                if (!success) break;
+            }
+        }
+            
+
+
 
         private string stringify(object? v)
         {

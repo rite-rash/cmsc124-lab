@@ -9,7 +9,7 @@ namespace Ck
         private readonly List<Token> tokens;
         private int current = 0;
 
-        
+
 
         public Parser(List<Token> tokens)
         {
@@ -88,29 +88,29 @@ namespace Ck
         private Node expression() => logicOr();
 
         //under equality grammar
-            private Node logicOr()
+        private Node logicOr()
+        {
+            Node expr = logicAnd();
+            while (match(TokenType.SOLO))
             {
-                Node expr = logicAnd();
-                while (match(TokenType.SOLO))
-                {
-                    Token op = previous();
-                    Node right = logicAnd();
-                    expr = new Binary(expr, op, right);
-                }
-                return expr;
+                Token op = previous();
+                Node right = logicAnd();
+                expr = new Binary(expr, op, right);
             }
+            return expr;
+        }
 
-            private Node logicAnd()
+        private Node logicAnd()
+        {
+            Node expr = equality();
+            while (match(TokenType.CHORD))
             {
-                Node expr = equality();
-                while (match(TokenType.CHORD))
-                {
-                    Token op = previous();
-                    Node right = equality();
-                    expr = new Binary(expr, op, right);
-                }
-                return expr;
+                Token op = previous();
+                Node right = equality();
+                expr = new Binary(expr, op, right);
             }
+            return expr;
+        }
 
         private Node equality()
         {
@@ -156,9 +156,9 @@ namespace Ck
             Node expr = unary();
             while (match(TokenType.SLASH, TokenType.STAR))
             {
-                Token op= previous();
+                Token op = previous();
                 Node right = unary();
-                expr=new Binary(expr, op, right);
+                expr = new Binary(expr, op, right);
             }
             return expr;
         }
@@ -168,7 +168,7 @@ namespace Ck
         {
             if (match(TokenType.BANG, TokenType.MINUS))
             {
-                Token op= previous();
+                Token op = previous();
                 Node right = unary();
                 return new Unary(op, right);
             }
@@ -178,8 +178,8 @@ namespace Ck
         private Node primary()
         {
             //mark the node as a literal if it's a number or a string
-            if (match(TokenType.LIVE))return new Literal(true);
-            if (match(TokenType.MUTE))return new Literal(false);
+            if (match(TokenType.LIVE)) return new Literal(true);
+            if (match(TokenType.MUTE)) return new Literal(false);
             if (match(TokenType.REST)) return new Literal(null);
             if (match(TokenType.BEAT, TokenType.LYRIC))
             {
@@ -187,7 +187,7 @@ namespace Ck
             }
             // tries to group and create expression of valid when seen open paren
             if (match(TokenType.LEFT_PAREN))
-            { 
+            {
                 Node exp = expression();
                 consume(TokenType.RIGHT_PAREN, "Expected ')' after expression"); // consume until closiing paren found
                 Node newExpression = new Grouping(exp);
@@ -218,8 +218,39 @@ namespace Ck
                 }
             }
             return new Tree(nodes);
+        }
 
-            
+    
+        public List<Statement> parseProgram()
+        {
+            var statements = new List<Statement>();
+            while (!atEnd())
+            {
+                try
+                {
+                    statements.Add(statement());
+                }
+                catch (Exception)
+                {
+                    synchronize(); //skip past next ;
+                }
+            }
+            return statements;
+        }
+
+
+        private Statement statement()
+        {
+            if (match(TokenType.STREAM))
+            {
+                Node value = expression();
+                consume(TokenType.SEMICOLON, "Expected ';' after value.");
+                return new StreamStatement(value);
+            }
+
+            Node expr = expression();
+            consume(TokenType.SEMICOLON, "Expected ';' after expression.");
+            return new ExpressionStatement(expr);
         }
 
         private void synchronize()
@@ -230,7 +261,13 @@ namespace Ck
             }
         }
 
+
+
+
     }
+
+
+
 
 
 }

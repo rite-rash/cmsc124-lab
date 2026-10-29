@@ -33,10 +33,24 @@ namespace Ck
 
         private object? evalBinary(Binary b)
         {
+            Token op = b.Operator;
+            if (op.Type == TokenType.SOLO)
+            {
+                object? l = evaluate(b.Left);
+                if (isTruthy(l)) return l; //short-circuit
+                return evaluate(b.Right);
+            }
+
+            if (op.Type == TokenType.CHORD)
+            {
+                object? l = evaluate(b.Left);
+                if (!isTruthy(l)) return l; //short-circuit
+                return evaluate(b.Right);
+            }
+
             //evaluate both sides first
             object? left = evaluate(b.Left);
             object? right = evaluate(b.Right);
-            Token op = b.Operator;
             switch (op.Type)
             {
                 case TokenType.MIX:
@@ -84,7 +98,7 @@ namespace Ck
             try { return stringify(evaluate(node)); }
             catch (RuntimeError e)
             {
-                Errors.ReportError(e.Operator.Line, e.Message);
+                Errors.ReportRuntimeError(e.Operator.Line, e.Message);
                 return null;
             }
         }

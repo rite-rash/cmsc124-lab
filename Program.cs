@@ -119,7 +119,7 @@ namespace Ck
 
         }
 
-        private static int RunFile(string: path) {
+        private static int RunFile(string path) {
             string source;
             try
             {
@@ -139,7 +139,7 @@ namespace Ck
             var evaluator = new Evaluator();
             foreach (var stmt in statements)
             {
-                if (!evaluator.execute(statements)) return 70; 
+                if (!evaluator.execute(stmt)) return 70; 
             }
             return 0;
         }

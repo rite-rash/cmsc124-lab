@@ -6,6 +6,7 @@ namespace Ck
     public class Evaluator
     {
         // -------- HELPERS --------
+        //check if value is truthy
         private bool isTruthy(object? v)
         {
             if (v == null) 
@@ -37,16 +38,18 @@ namespace Ck
             if (op.Type == TokenType.SOLO)
             {
                 object? l = evaluate(b.Left);
-                if (isTruthy(l)) return l; //short-circuit
+                if (isTruthy(l)) return l; //short-circuit when left is truthy
                 return evaluate(b.Right);
             }
 
             if (op.Type == TokenType.CHORD)
             {
                 object? l = evaluate(b.Left);
-                if (!isTruthy(l)) return l; //short-circuit
+                if (!isTruthy(l)) return l; //short-circuit when left is falsey
                 return evaluate(b.Right);
             }
+
+
 
             //evaluate both sides first
             object? left = evaluate(b.Left);
@@ -55,7 +58,7 @@ namespace Ck
             {
                 case TokenType.MIX:
                     if (left is double && right is double) return (double)left! + (double)right!;
-                    if (left is string && right is string) return (string)left! + (string)right!;
+                    if (left is string || right is string) return (string)left! + (string)right!;
                     throw new RuntimeError(op, "Operands must be two numbers or two strings.");
                 case TokenType.MINUS: checkNumberOperands(op, left, right); return (double)left! - (double)right!;
                 case TokenType.STAR: checkNumberOperands(op, left, right); return (double)left! * (double)right!;

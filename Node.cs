@@ -54,6 +54,7 @@ namespace Ck
         }
     }
 
+
     //get root of the parsed:
     public class Tree : Node
     {
@@ -64,4 +65,28 @@ namespace Ck
             Expressions = expressions;
         }
     }
+
+    //statements
+    public abstract class Statement
+    { }
+    public class StreamStatement : Statement
+    {
+        public Node Expression { get; }
+        public StreamStatement(Node expression)
+        {
+            Expression = expression;
+        }
+    }
+
+    public class ExpressionStatement : Statement
+    {
+        public Node Expression { get; }
+        public ExpressionStatement(Node expression){
+            Expression = expression;
+        }
+    }
 }
+
+
+
+

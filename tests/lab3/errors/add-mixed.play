@@ -1,0 +1,2 @@
+live + 1;
+// expected runtime error

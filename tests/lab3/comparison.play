@@ -1,0 +1,7 @@
+6 < 7;  //expected: live
+6 < 6;  //expected: mute
+6 <= 6;  //expected: live
+7 > 6;  //expected: live
+6 >= 7;  //expected: mute
+!(6 < 7);  //expected: mute
+!(6 >= 7);  //expected: live

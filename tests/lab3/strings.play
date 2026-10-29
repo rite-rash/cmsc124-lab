@@ -1,0 +1,4 @@
+"a"+"b"; //expected: ab
+"hello" + "world";  //expected: hello world
+"helloooo " + " w o  o r ld";   //expected: helloooo  w o  o r ld
+"    emp" + "ty    ";   //expected:    empty    

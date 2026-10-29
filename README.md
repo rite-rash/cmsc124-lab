@@ -9,6 +9,8 @@
 
 SoundWave is a music-themed scripting language. Its syntax borrowed terms from music production. How ths works is that a track declares a value, stream outputs it, and an album will group related tracks into a function. The intended flow is for the input to be a number that doubles as a MIDI note number (0-127), so that arithmetic on a track behaves like transposition and for stream to output the result as a note name.
 
+For the sake of familiarity, this documentation will use **C# keywords** rather than the language's keywords.
+
 ## Host language and build
 
 - Host language: C# (.NET 8)
@@ -178,12 +180,12 @@ truthy, including `0` and an empty string.
 
 ### Operator semantics
 
-- Arithmetic: [accepted operand types]
-- `+` on strings: [concatenation, error, or coercion]
-- Mixed types: [what happens]
-- Comparison: [accepted operand types]
-- Equality across types: [false, or an error]
-- Division by zero: runtime error.
+- Arithmetic: track with track, string with string (concat), number with string (concat).
+- `+` on strings: concatenation if both operands are strings. coercion with priority to strings if performed on a string and a number.
+- Mixed types: Runtime error with exit code 70 for operators other than `+`.
+- Comparison: Between numbers only, unless checking for equality.
+- Equality across types: Allows comparing between numbers and strings.
+- Division by zero: Runtime error with exit code 70.
 
 ### Scope and bindings
 

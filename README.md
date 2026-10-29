@@ -26,8 +26,7 @@ SoundWave is a music-themed scripting language. Its syntax borrowed terms from m
 | `./run --eval <file>` | [Evaluates each expression and prints its value.] |
 | `./run` | [Starts the REPL.] |
 
-
-Exit codes: 0 [clean scan], 65 [unrecognized character, unterminated string], 70 [runtime].
+Exit code 0 means the program ran with no errors. See Errors and Diagnostics section for other exit codes.
 
 ## File extension
 
@@ -38,10 +37,10 @@ Exit codes: 0 [clean scan], 65 [unrecognized character, unterminated string], 70
 
 | Keyword | Purpose | Status |
 |---|---|---|
-| `track` | variable declaration | (parsiong not implemented) |
-| `stream` | output statement | (parsiong not implemented)  |
-| `album` | function definition | (parsiong not implemented)  |
-| `repeat` | loop | (parsiong not implemented) |
+| `track` | variable declaration | (parsing not yet implemented) |
+| `stream` | output statement | (parsing not yet implemented)  |
+| `album` | function definition | (parsing not yet implemented)  |
+| `repeat` | loop | (parsing not yet implemented) |
 | `live` | boolean true | implemented |
 | `mute` | boolean false | implemented |
 | `rest` | nil | implemented |
@@ -184,11 +183,11 @@ truthy, including `0` and an empty string.
 - Mixed types: [what happens]
 - Comparison: [accepted operand types]
 - Equality across types: [false, or an error]
-- Division by zero: runtime error, so SOUNDWAVE rejects it deliberately.
+- Division by zero: runtime error.
 
 ### Scope and bindings
 
-- Redeclaration in the same scope: Error with exxit code 65
+- Redeclaration in the same scope: Error with exit code 65
 - Uninitialized variable holds: `rest`
 - Shadowing: allowed in nested scopes
 - Undefined name: Runtime error with exit code 70
@@ -219,8 +218,9 @@ Message format:
 
 | Failure | Exit code |
 |---|---|
-| [lexical error] | 65 |
-| [syntax error] | 65 |
+|[usage command error]| 64 |
+| [lexical/syntax error] | 65 |
+| [no input error] | 66 |
 | [runtime error] | 70 |
 
 
@@ -340,12 +340,10 @@ were for the purpose of simplification and to focus more on the logic.
 ## Known limitations
 
 - Escape sequences inside strings are not supported.
-- No explicit statement terminator token yet exists.
 - `album` (functions) and `repeat` (loops) are recognized as keywords but
   do not do anything yet.
-- Operator precedence and associativity are not yet finalized.
-- `chord` (and) and `solo` (or) are recognized as keywords but not yet used in the grammar.
-
+- Multi-line comments are not supported.
+  
 ## Changelog
 
 | Activity | What changed in the language |

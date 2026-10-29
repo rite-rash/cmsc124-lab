@@ -1,0 +1,3 @@
+"an hour has " + 60 + " minutes";    //expected: an hour has 60.0 minutes
+"CMSC " + 124;  //expected: CMSC 124.0
+"CMSC " + 12 + "4";  //expected: CMSC 12.04

@@ -1,0 +1,5 @@
+live chord mute;  //expected: mute
+mute solo live;  //expected: live
+mute solo 5;  //expected: 5.0
+live solo (1/0);  //expected: live
+//since shortcircuit left operand

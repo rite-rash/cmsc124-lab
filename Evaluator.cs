@@ -6,6 +6,7 @@ namespace Ck
     public class Evaluator
     {
         // -------- HELPERS --------
+        //check if value is truthy
         private bool isTruthy(object? v)
         {
             if (v == null) 
@@ -15,8 +16,14 @@ namespace Ck
             return true;        //default
         }
 
-        private bool isEqual(object? a, object? b) => Equals(a, b); //compares by value, since == uses references
-
+        private bool isEqual(object? a, object? b)
+        {
+            if (a is double d && b is string s)
+                return double.TryParse(s, out var n) && d == n; // tries to parse string to number and compares it
+            if (a is string && b is double)
+                return isEqual(b, a);
+            return Equals(a, b);
+        }
 
         //check node type, recursion
         public object? evaluate(Node node)
@@ -33,16 +40,32 @@ namespace Ck
 
         private object? evalBinary(Binary b)
         {
+            Token op = b.Operator;
+            if (op.Type == TokenType.SOLO)
+            {
+                object? l = evaluate(b.Left);
+                if (isTruthy(l)) return l; //short-circuit when left is truthy
+                return evaluate(b.Right);
+            }
+
+            if (op.Type == TokenType.CHORD)
+            {
+                object? l = evaluate(b.Left);
+                if (!isTruthy(l)) return l; //short-circuit when left is falsey
+                return evaluate(b.Right);
+            }
+
+
+
             //evaluate both sides first
             object? left = evaluate(b.Left);
             object? right = evaluate(b.Right);
-            Token op = b.Operator;
             switch (op.Type)
             {
                 case TokenType.MIX:
                     if (left is double && right is double) return (double)left! + (double)right!;
-                    if (left is string && right is string) return (string)left! + (string)right!;
-                    throw new RuntimeError(op, "Operands must be two numbers or two strings.");
+                    if (left is string || right is string) return stringify(left) + stringify(right);
+                    throw new RuntimeError(op, "Operands must be two numbers, or at least one string.");
                 case TokenType.MINUS: checkNumberOperands(op, left, right); return (double)left! - (double)right!;
                 case TokenType.STAR: checkNumberOperands(op, left, right); return (double)left! * (double)right!;
                 case TokenType.SLASH:
@@ -53,7 +76,7 @@ namespace Ck
                 case TokenType.GREATER_EQUAL: checkNumberOperands(op, left, right); return (double)left! >= (double)right!;
                 case TokenType.LESS:          checkNumberOperands(op, left, right); return (double)left! <  (double)right!;
                 case TokenType.LESS_EQUAL:    checkNumberOperands(op, left, right); return (double)left! <= (double)right!;
-                case TokenType.EQUAL_EQUAL:   return isEqual(left, right);
+                case TokenType.EQUAL_EQUAL:   return isEqual (left, right);
                 case TokenType.CHECK_IF:      return !isEqual(left, right);
             }
             throw new RuntimeError(op, "Unknown binary operator.");
@@ -84,7 +107,7 @@ namespace Ck
             try { return stringify(evaluate(node)); }
             catch (RuntimeError e)
             {
-                Errors.ReportError(e.Operator.Line, e.Message);
+                Errors.ReportRuntimeError(e.Operator.Line, e.Message);
                 return null;
             }
         }

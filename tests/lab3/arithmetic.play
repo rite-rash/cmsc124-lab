@@ -1,0 +1,7 @@
+6 + 7;  //expected: 13.0
+6+7;  //expected: 13.0
+(6 + 7) * 8;  //expected: 104.0
+6 + 7 * 8;   //expected: 62.0
+80/3; //expected: 26.666666666666668
+6-8-9;   //expected: -11.0
+-(6-8-9);    //expected: 11.0

@@ -18,8 +18,6 @@ SoundWave is a music-themed scripting language. Its syntax borrowed terms from m
   from a clean checkout with no other setup.
 
 ## Running it
-
-
 | Command | What it does |
 |---|---|
 | `./run <file>` | [Executes a program. Available from Lab 4.] |
@@ -37,7 +35,6 @@ Exit codes: 0 [clean scan], 65 [unrecognized character, unterminated string], 70
 ## Lexical structure
 
 ### Keywords
-
 
 | Keyword | Purpose | Status |
 |---|---|---|
@@ -84,11 +81,9 @@ Exit codes: 0 [clean scan], 65 [unrecognized character, unterminated string], 70
 - Case-sensitive: yes
 - No length limit is enforced yet.
 
-
 ### Comments
-
 - Line comments: '//', runs to the end of the line. Discarded by scanner.
-- Block comments: not supported yet for lab1.
+- Block comments: not supported.
 - Nesting: no block comments to nest
 - [Harness note: comment_prefix in tests/lab*/manifest.json is set to the
   token above.]
@@ -115,6 +110,14 @@ for error messages. Frozen as of Lab 1; changes are recorded in the
 changelog.
 
 ## Grammar
+tree → declaration* ;
+declaration → varDecl| statement;
+varDecl     → "track" IDENTIFIER ( "=" expression )? ";" ;
+statement   → exprStmt | printStmt | block ;
+printStmt   → "stream" expression ";" ;
+block       → "{" declaration* "}" ;
+exprStmt    → expression ";" ;
+
 expression → equality
 equality → comparison ( ( "!=" | "==" ) comparison )*
 comparison → term ( ( ">" | ">=" | "<" | "<=" ) term )*
@@ -129,7 +132,21 @@ primary → NUMBER | STRING | "live" | "mute" | "rest" | "(" expression ")"
 - Groupings print as: `group( ...) `
 - Numbers print as: ```1.0, 3.0```
 
+
+
+
+
+
 ## Semantics
+
+- **Paradigm:** SoundWave is an imperative language that executes sequential statements and supports side-effect output operations
+- **Mutability:** Bindings are `mutable`. Variables which are created using `track` are updated using `=`
+- **Binding time:** runtime
+- **Storage-lifetime:** implicit heap-dynamic
+- **Output:** `stream`statement
+
+
+
 
 ### Values and types
 
@@ -171,10 +188,10 @@ truthy, including `0` and an empty string.
 
 ### Scope and bindings
 
-- Redeclaration in the same scope: [allowed or an error]
-- Uninitialized variable holds: [value]
-- Shadowing: [behavior]
-- Undefined name: [static error with exit 65, or runtime error with exit 70]
+- Redeclaration in the same scope: Error with exxit code 65
+- Uninitialized variable holds: `rest`
+- Shadowing: allowed in nested scopes
+- Undefined name: Runtime error with exit code 70
 
 ### Control flow and functions
 

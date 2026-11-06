@@ -4,7 +4,35 @@
 
 namespace Ck
 {
+    public class Variable : Node
+    {
+        public Token Name { get; }
+        public Variable(Token name) { Name = name; }
+    }
+    //
+    public abstract class Stmt { }
 
+    public class ExprStmt : Stmt
+    {
+        public Node Expression { get; }
+        public ExprStmt(Node expression) { Expression = expression; }
+    }
+
+    public class PrintStmt : Stmt
+    {
+        public Node Expression { get; }
+        public PrintStmt(Node expression) { Expression = expression; }
+    }
+
+    public class VarStmt : Stmt
+    {
+        public Token Name { get; }
+        public Node? Initializer { get; }     //initializer can be null, so use nullable type
+        public VarStmt(Token name, Node? initializer) {
+            Name = name; Initializer = initializer;
+        }
+    }
+    
     public abstract class Node
     { }
 

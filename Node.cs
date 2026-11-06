@@ -1,4 +1,4 @@
-//DESCRIPTION: abstract calss for polymorphism
+//DESCRIPTION: abstract class for polymorphism
 //              blueprint is made for node objects
 
 

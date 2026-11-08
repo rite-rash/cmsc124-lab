@@ -268,6 +268,9 @@ namespace Ck
             if (!scopes[^1].Add(name.Lexeme)) //innermost set, which is the last one in the list (global scope prioritized)
                 Errors.ReportError(name.Line, $"Already a variable named '{name.Lexeme}' in this scope.");
         }
+
+    
+
         public Tree parse()
         {
             var statements = new List<Statement>();

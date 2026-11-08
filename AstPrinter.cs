@@ -21,9 +21,26 @@ namespace Ck
                     return Build(u.Operator.Lexeme, u.Right);
                 case Binary b:
                     return Build(b.Operator.Lexeme, b.Left, b.Right);
+                case Variable v: 
+                    return v.Name.Lexeme;
                 default:
                     throw new InvalidOperationException(
                         "AstPrinter: unknown node " + node?.GetType().Name);
+            }
+        }
+
+        //overload, so lab 2 tests do not fail
+        public static string Print(Statement stmt)
+        {
+            switch (stmt)
+            {
+                case ExpressionStatement e: return Print(e.Expression);
+                case StreamStatement s:     return Build("stream", s.Expression);
+                case TrackStatement t:
+                    return t.Initializer == null
+                        ? $"(track {t.Name.Lexeme})"
+                        : Build("track " + t.Name.Lexeme, t.Initializer);
+                default: throw new InvalidOperationException("AstPrinter: unknown statement.");
             }
         }
 

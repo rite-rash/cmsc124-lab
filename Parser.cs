@@ -7,6 +7,7 @@ namespace Ck
     public class Parser
     {
         private readonly List<Token> tokens;
+        private readonly List<HashSet<string>> scopes = new() { new HashSet<string>() }; //List of sets to represent scopes
         private int current = 0;
 
 
@@ -73,6 +74,15 @@ namespace Ck
             }
 
             return false;
+        }
+
+        //allow errors to be reported and then continue parsing, instead of stopping at the first error
+        private void synchronize()
+        {
+            while (!atEnd())
+            {
+                if (advance().Type == TokenType.SEMICOLON) return;
+            }
         }
 
         //provide msg if not match
@@ -185,6 +195,11 @@ namespace Ck
             {
                 return new Literal(previous().Literal);
             }
+
+            //makes x a variable if it matches a label token,
+            //then creates a new variable node with same label
+            if (match(TokenType.LABEL)) return new Variable(previous());
+
             // tries to group and create expression of valid when seen open paren
             if (match(TokenType.LEFT_PAREN))
             {
@@ -197,77 +212,71 @@ namespace Ck
             //if none matched
             Errors.ReportError(peek().Line, "Expected expression.");
             throw new Exception("Expected expression.");
-
-
         }
 
-        public Tree parse()
+        // -------- STATEMENT RULES --------
+        private Statement? declaration()
         {
-            var nodes = new List<Node>();
-            while (!atEnd())
+            try
             {
-                try
-                {
-                    Node expr = expression();
-                    consume(TokenType.SEMICOLON, "Expected ';' after expression.");
-                    nodes.Add(expr);
-                }
-                catch (Exception)
-                {
-                    synchronize();
-                }
+                if (match(TokenType.TRACK)) return varDeclaration();
+                return statement();
             }
-            return new Tree(nodes);
+            catch (Exception)
+            {
+                synchronize();
+                return null;
+            }
         }
 
-    
-        public List<Statement> parseProgram()
+        private Statement varDeclaration()
+        {
+            Token name = consume(TokenType.LABEL, "Expect variable name.");
+            Node? initializer = null;
+            if (match(TokenType.EQUAL)) initializer = expression();
+            consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
+            declare(name);
+            return new TrackStatement(name, initializer);
+        }
+
+        private Statement statement()
+        {
+            if (match(TokenType.STREAM)) return printStatement();
+            return expressionStatement();
+        }
+
+        private Statement printStatement()
+        {
+            Node value = expression();
+            consume(TokenType.SEMICOLON, "Expect ';' after value.");
+            return new StreamStatement(value);
+        }
+
+        private Statement expressionStatement()
+        {
+            Node expr = expression();
+            consume(TokenType.SEMICOLON, "Expect ';' after expression.");
+            return new ExpressionStatement(expr);
+        }
+
+
+// -------- SCOPE MANAGEMENT --------
+
+        //if variable is already declared in the current scope, report an error
+        private void declare(Token name)
+        {
+            if (!scopes[^1].Add(name.Lexeme)) //innermost set, which is the last one in the list (global scope prioritized)
+                Errors.ReportError(name.Line, $"Already a variable named '{name.Lexeme}' in this scope.");
+        }
+        public Tree parse()
         {
             var statements = new List<Statement>();
             while (!atEnd())
             {
-                try
-                {
-                    statements.Add(statement());
-                }
-                catch (Exception)
-                {
-                    synchronize(); //skip past next ;
-                }
+                Statement? stmt = declaration();
+                if (stmt != null) statements.Add(stmt);
             }
-            return statements;
+            return new Tree(statements);
         }
-
-
-        private Statement statement()
-        {
-            if (match(TokenType.STREAM))
-            {
-                Node value = expression();
-                consume(TokenType.SEMICOLON, "Expected ';' after value.");
-                return new StreamStatement(value);
-            }
-
-            Node expr = expression();
-            consume(TokenType.SEMICOLON, "Expected ';' after expression.");
-            return new ExpressionStatement(expr);
-        }
-
-        private void synchronize()
-        {
-            while (!atEnd())
-            {
-                if (advance().Type == TokenType.SEMICOLON) return;
-            }
-        }
-
-
-
-
     }
-
-
-
-
-
 }

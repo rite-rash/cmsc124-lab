@@ -34,9 +34,16 @@ namespace Ck
                 case Grouping g: return evaluate(g.Expression);
                 case Binary b: return evalBinary(b);
                 case Unary u: return evalUnary(u);
+                case Variable v: return evaluateVariable(v);
                 default: throw new InvalidOperationException("Evaluator: unknown node " + node?.GetType().Name);
             }
         }
+
+        private object? evaluateVariable(Variable v)
+            {
+                // TODO: have a lookup for variables
+                throw new RuntimeError(v.Name, $"Undefined variable '{v.Name.Lexeme}'.");
+            }
 
         private object? evalBinary(Binary b)
         {
@@ -72,12 +79,12 @@ namespace Ck
                     checkNumberOperands(op, left, right);
                     if ((double)right! == 0) throw new RuntimeError(op, "Division by zero.");
                     return (double)left! / (double)right!;
-                case TokenType.GREATER:       checkNumberOperands(op, left, right); return (double)left! >  (double)right!;
+                case TokenType.GREATER: checkNumberOperands(op, left, right); return (double)left! > (double)right!;
                 case TokenType.GREATER_EQUAL: checkNumberOperands(op, left, right); return (double)left! >= (double)right!;
-                case TokenType.LESS:          checkNumberOperands(op, left, right); return (double)left! <  (double)right!;
-                case TokenType.LESS_EQUAL:    checkNumberOperands(op, left, right); return (double)left! <= (double)right!;
-                case TokenType.EQUAL_EQUAL:   return isEqual (left, right);
-                case TokenType.CHECK_IF:      return !isEqual(left, right);
+                case TokenType.LESS: checkNumberOperands(op, left, right); return (double)left! < (double)right!;
+                case TokenType.LESS_EQUAL: checkNumberOperands(op, left, right); return (double)left! <= (double)right!;
+                case TokenType.EQUAL_EQUAL: return isEqual(left, right);
+                case TokenType.CHECK_IF: return !isEqual(left, right);
             }
             throw new RuntimeError(op, "Unknown binary operator.");
         }
@@ -125,6 +132,17 @@ namespace Ck
                     //use stringify and print if steam then if expression just eval without printing
                     case StreamStatement ss: Console.WriteLine(stringify(evaluate(ss.Expression))); break;
                     case ExpressionStatement es: evaluate(es.Expression); break;
+                    //for condituonals
+                    case IfStatement ifs:
+                        if (isTruthy(evaluate(ifs.Condition)))
+                        {
+                            execute(ifs.IfBranch);
+                        }
+                        else if (ifs.ElseBranch != null)
+                        {
+                            execute(ifs.ElseBranch);
+                        }
+                        break;
                 }
                 return true;
             }

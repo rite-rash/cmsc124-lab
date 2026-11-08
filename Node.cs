@@ -9,29 +9,6 @@ namespace Ck
         public Token Name { get; }
         public Variable(Token name) { Name = name; }
     }
-    //
-    public abstract class Stmt { }
-
-    public class ExprStmt : Stmt
-    {
-        public Node Expression { get; }
-        public ExprStmt(Node expression) { Expression = expression; }
-    }
-
-    public class PrintStmt : Stmt
-    {
-        public Node Expression { get; }
-        public PrintStmt(Node expression) { Expression = expression; }
-    }
-
-    public class VarStmt : Stmt
-    {
-        public Token Name { get; }
-        public Node? Initializer { get; }     //initializer can be null, so use nullable type
-        public VarStmt(Token name, Node? initializer) {
-            Name = name; Initializer = initializer;
-        }
-    }
     
     public abstract class Node
     { }
@@ -86,11 +63,11 @@ namespace Ck
     //get root of the parsed:
     public class Tree : Node
     {
-        public List<Node> Expressions { get; }
+        public List<Statement> Statements  { get; }
 
-        public Tree(List<Node> expressions)
+        public Tree(List<Statement> statements)
         {
-            Expressions = expressions;
+            Statements  = statements ;
         }
     }
 
@@ -113,6 +90,18 @@ namespace Ck
             Expression = expression;
         }
     }
+
+    public class TrackStatement : Statement
+{
+    public Token Name { get; }
+    public Node? Initializer { get; }     //null for `track x;`
+
+    public TrackStatement(Token name, Node? initializer)
+    {
+        Name = name;
+        Initializer = initializer;
+    }
+}
 }
 
 

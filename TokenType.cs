@@ -35,6 +35,9 @@ public enum TokenType
     CHORD,      //and
     SOLO,        //or
 
+    IF
+    ELSE
+
     EOF //end
 
 }

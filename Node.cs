@@ -18,6 +18,16 @@ namespace Ck
         }
     }
 
+    public class Variable : Node
+    {
+        public Token Name { get; } 
+
+        public Variable(Token name)
+        {
+            Name = name;
+        }
+    }
+
     public class Binary : Node
     {
         public Node Left { get; }

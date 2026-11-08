@@ -81,9 +81,30 @@ namespace Ck
     public class ExpressionStatement : Statement
     {
         public Node Expression { get; }
-        public ExpressionStatement(Node expression){
+        public ExpressionStatement(Node expression)
+        {
             Expression = expression;
         }
+    }
+
+
+    //conditionals
+    public class IfStatement : Statement
+    {
+        //read only properties
+        public Node Condition { get; } // root node
+        public Statement IfBranch { get; }
+        public Statement? ElseBranch { get; } //optional else branch
+
+        public IfStatement(Node condition, Statement ifBranch, Statement? elseBranch){
+            Condition = condition;
+            IfBranch = ifBranch;
+            ElseBranch = elseBranch;
+
+        }
+
+
+
     }
 }
 

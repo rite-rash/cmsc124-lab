@@ -185,6 +185,10 @@ namespace Ck
             {
                 return new Literal(previous().Literal);
             }
+
+
+            if (match(TokenType.LABEL)) return new Variable(previous()); //for variables 
+            
             // tries to group and create expression of valid when seen open paren
             if (match(TokenType.LEFT_PAREN))
             {
@@ -241,6 +245,13 @@ namespace Ck
 
         private Statement statement()
         {
+            //for conditionals
+            if (match(TokenType.IF))
+            {
+                return ifStatement();
+            }
+
+
             if (match(TokenType.STREAM))
             {
                 Node value = expression();
@@ -252,6 +263,30 @@ namespace Ck
             consume(TokenType.SEMICOLON, "Expected ';' after expression.");
             return new ExpressionStatement(expr);
         }
+
+        //conditional statament
+        private Statement ifStatement()
+        {
+
+            consume(TokenType.LEFT_PAREN, "Expected '(' after if statement");
+            Node condition = expression();
+            consume(TokenType.RIGHT_PAREN, "Expected ')' after conditionn");
+
+            Statement ifBranch = statement();
+            Statement? elseBranch = null; //default is null since optional
+
+            if (match(TokenType.ELSE))
+                {
+                    elseBranch = statement(); 
+                }
+
+                return new IfStatement(condition, ifBranch, elseBranch);
+
+
+
+        }
+
+
 
         private void synchronize()
         {

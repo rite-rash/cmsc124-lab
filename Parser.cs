@@ -196,6 +196,8 @@ namespace Ck
                 return new Literal(previous().Literal);
             }
 
+
+            
             //makes x a variable if it matches a label token,
             //then creates a new variable node with same label
             if (match(TokenType.LABEL)) return new Variable(previous());
@@ -241,6 +243,19 @@ namespace Ck
 
         private Statement statement()
         {
+            //for conditionals
+            if (match(TokenType.IF))
+            {
+                return ifStatement();
+            }
+
+
+            if (match(TokenType.STREAM))
+            {
+                Node value = expression();
+                consume(TokenType.SEMICOLON, "Expected ';' after value.");
+                return new StreamStatement(value);
+            }
             if (match(TokenType.STREAM)) return printStatement();
             return expressionStatement();
         }
@@ -257,6 +272,28 @@ namespace Ck
             Node expr = expression();
             consume(TokenType.SEMICOLON, "Expect ';' after expression.");
             return new ExpressionStatement(expr);
+        }
+
+        //conditional statament
+        private Statement ifStatement()
+        {
+
+            consume(TokenType.LEFT_PAREN, "Expected '(' after if statement");
+            Node condition = expression();
+            consume(TokenType.RIGHT_PAREN, "Expected ')' after conditionn");
+
+            Statement ifBranch = statement();
+            Statement? elseBranch = null; //default is null since optional
+
+            if (match(TokenType.ELSE))
+                {
+                    elseBranch = statement(); 
+                }
+
+                return new IfStatement(condition, ifBranch, elseBranch);
+
+
+
         }
 
 

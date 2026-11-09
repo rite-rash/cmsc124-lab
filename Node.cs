@@ -1,10 +1,15 @@
-//DESCRIPTION: abstract calss for polymorphism
+//DESCRIPTION: abstract class for polymorphism
 //              blueprint is made for node objects
 
 
 namespace Ck
 {
-
+    public class Variable : Node
+    {
+        public Token Name { get; }
+        public Variable(Token name) { Name = name; }
+    }
+    
     public abstract class Node
     { }
 
@@ -68,11 +73,11 @@ namespace Ck
     //get root of the parsed:
     public class Tree : Node
     {
-        public List<Node> Expressions { get; }
+        public List<Statement> Statements  { get; }
 
-        public Tree(List<Node> expressions)
+        public Tree(List<Statement> statements)
         {
-            Expressions = expressions;
+            Statements  = statements ;
         }
     }
 
@@ -116,6 +121,17 @@ namespace Ck
 
 
     }
+    public class TrackStatement : Statement
+{
+    public Token Name { get; }
+    public Node? Initializer { get; }     //null for `track x;`
+
+    public TrackStatement(Token name, Node? initializer)
+    {
+        Name = name;
+        Initializer = initializer;
+    }
+}
 }
 
 

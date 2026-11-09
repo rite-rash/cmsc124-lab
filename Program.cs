@@ -87,8 +87,10 @@ namespace Ck
             var tree = checkSource(source);
             if (tree == null) return 65;
 
-            foreach (var expr in tree.Expressions)
-                Console.WriteLine(AstPrinter.Print(expr));
+            foreach (var stmt in tree.Statements){
+                Console.WriteLine(AstPrinter.Print(stmt));
+            }
+
             return 0;
         }
 
@@ -109,10 +111,14 @@ namespace Ck
             if (tree == null) return 65;
 
             var evaluator = new Evaluator();
-            foreach (var expr in tree.Expressions)
+            foreach (var stmt in tree.Statements)
             {
-                string? text = evaluator.interpret(expr);
-                if (text == null) return 70;
+                if (stmt is not ExpressionStatement es)
+                    continue;
+
+                string? text = evaluator.interpret(es.Expression);
+                if (text == null)
+                    return 70; //runtime error
                 Console.WriteLine(text);
             }
             return 0;
@@ -133,11 +139,11 @@ namespace Ck
             if (Errors.HadError) return 65;
 
             //just report errors abd dont print any
-            var statements = new Parser(tokens).parseProgram();
+            var statements = new Parser(tokens).parse();
             if (Errors.HadError) return 65;
 
             var evaluator = new Evaluator();
-            foreach (var stmt in statements)
+            foreach (var stmt in statements.Statements)
             {
                 if (!evaluator.execute(stmt)) return 70; 
             }
@@ -160,12 +166,16 @@ namespace Ck
                 if (tree == null)
                     continue;
 
-                foreach (var expr in tree.Expressions)
+                foreach (var stmt in tree.Statements)
                 {
-                    string? text = evaluator.interpret(expr);
-                    if (text == null)
-                        break;
-                    Console.WriteLine(text);
+                    if (stmt is ExpressionStatement es)
+                    {
+                        string? text = evaluator.interpret(es.Expression);
+                        if (text == null) break;
+                        Console.WriteLine(text);
+                    }
+                    else if (!evaluator.execute(stmt))
+                    break;
                 }
             }
         }

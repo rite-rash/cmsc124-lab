@@ -6,6 +6,10 @@ namespace Ck
     public class Evaluator
     {
         // -------- HELPERS --------
+        //new environment for variable storage, stays alive as long as evaluator is alive, so variables can be stored and retrieved
+        private Environment environment = new Environment();
+
+
         //check if value is truthy
         private bool isTruthy(object? v)
         {
@@ -34,16 +38,10 @@ namespace Ck
                 case Grouping g: return evaluate(g.Expression);
                 case Binary b: return evalBinary(b);
                 case Unary u: return evalUnary(u);
-                case Variable v: return evaluateVariable(v);
+                case Variable v: return environment.get(v.Name);
                 default: throw new InvalidOperationException("Evaluator: unknown node " + node?.GetType().Name);
             }
         }
-
-        private object? evaluateVariable(Variable v)
-            {
-                // TODO: have a lookup for variables
-                throw new RuntimeError(v.Name, $"Undefined variable '{v.Name.Lexeme}'.");
-            }
 
         private object? evalBinary(Binary b)
         {
@@ -143,6 +141,14 @@ namespace Ck
                             execute(ifs.ElseBranch);
                         }
                         break;
+                    case TrackStatement ts:
+                    {
+                        object? value = ts.Initializer == null ? null : evaluate(ts.Initializer);
+                        environment.define(ts.Name.Lexeme, value);
+                        break;
+                    }
+                    default:
+                    throw new InvalidOperationException("Evaluator: unknown statement " + statement?.GetType().Name);
                 }
                 return true;
             }
@@ -154,13 +160,15 @@ namespace Ck
         }
         
         //handles multiple statements and stops when the execute flag is false
-        public void interpret(List<Statement> statements)
+        //bool return type to indicate if the execution was successful or not so Program.cs can exit with a non-zero code
+        public bool interpret(List<Statement> statements)
         {
-            foreach (Statement statement in statements)
+            foreach (var statement in statements)
             {
-                bool success = execute(statement);
-                if (!success) break;
+                if (!execute(statement)) 
+                    return false;
             }
+            return true;
         }
             
 

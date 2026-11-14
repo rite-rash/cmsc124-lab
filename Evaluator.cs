@@ -39,6 +39,12 @@ namespace Ck
                 case Binary b: return evalBinary(b);
                 case Unary u: return evalUnary(u);
                 case Variable v: return environment.get(v.Name);
+                case Assign a:
+                {
+                    object? value = evaluate(a.Value);
+                    environment.assign(a.Name, value);
+                    return value;
+                }
                 default: throw new InvalidOperationException("Evaluator: unknown node " + node?.GetType().Name);
             }
         }

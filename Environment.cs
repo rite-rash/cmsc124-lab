@@ -16,6 +16,13 @@ namespace Ck
         //always local, never walks outward
         public void define(string name, object? value) => values[name] = value;
 
+        public void assign(Token name, object? value)
+        {
+            if (values.ContainsKey(name.Lexeme)) { values[name.Lexeme] = value; return; }
+            if (enclosing != null) { enclosing.assign(name, value); return; }
+            throw new RuntimeError(name, $"Undefined variable '{name.Lexeme}'.");
+        }
+
         public object? get(Token name)
         {
             if (values.TryGetValue(name.Lexeme, out var v)) return v;

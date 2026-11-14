@@ -29,6 +29,13 @@ namespace Ck
             }
         }
 
+        public class Assign : Node
+        {
+            public Token Name;
+            public Node Value;
+            public Assign(Token name, Node value) { Name = name; Value = value; }
+        }
+
         //overload, so lab 2 tests do not fail
         public static string Print(Statement stmt)
         {

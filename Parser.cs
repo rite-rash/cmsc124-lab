@@ -79,10 +79,20 @@ namespace Ck
         //allow errors to be reported and then continue parsing, instead of stopping at the first error
         private void synchronize()
         {
+            advance();   // guarantees progress, so no infinite loop
             while (!atEnd())
             {
-                if (advance().Type == TokenType.SEMICOLON) return;
-            }
+                if (previous().Type == TokenType.SEMICOLON) return;
+                switch (peek().Type)
+                {
+                    case TokenType.TRACK:
+                    case TokenType.STREAM:
+                    case TokenType.LEFT_BRACE:
+                    case TokenType.RIGHT_BRACE:
+                        return;
+                }
+                advance();
+                }
         }
 
         //provide msg if not match
@@ -95,7 +105,24 @@ namespace Ck
 
 
         //------- RULES ------
-        private Node expression() => logicOr();
+        private Node expression() => assignment();
+
+        private Node assignment()
+        {
+            Node expr = logicOr();
+
+            if (match(TokenType.EQUAL))
+            {
+                Token equals = previous();
+                Node value = assignment();   // right-recursive, so a = b = 3 works
+
+                if (expr is Variable v)
+                    return new Assign(v.Name, value);
+
+                Errors.ReportError(equals.Line, "Invalid assignment target.");
+            }
+            return expr;
+        }
 
         //under equality grammar
         private Node logicOr()
@@ -257,6 +284,7 @@ namespace Ck
                 return new StreamStatement(value);
             }
             if (match(TokenType.STREAM)) return printStatement();
+            if (match(TokenType.LEFT_BRACE)) return block();
             return expressionStatement();
         }
 
@@ -274,6 +302,22 @@ namespace Ck
             return new ExpressionStatement(expr);
         }
 
+        private Statement block()
+        {
+            var stmts = new List<Statement>();
+            scopes.Add(new HashSet<string>());
+            try
+            {
+                while (!check(TokenType.RIGHT_BRACE) && !atEnd())
+                {
+                    var d = declaration();
+                    if (d != null) stmts.Add(d);
+                }
+                consume(TokenType.RIGHT_BRACE, "Expect '}' after block.");
+            }
+            finally { scopes.RemoveAt(scopes.Count - 1); }
+            return new BlockStatement(stmts);
+        }
         //conditional statament
         private Statement ifStatement()
         {

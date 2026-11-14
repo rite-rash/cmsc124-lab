@@ -112,16 +112,30 @@ namespace Ck
 
     }
     public class TrackStatement : Statement
-{
-    public Token Name { get; }
-    public Node? Initializer { get; }     //null for `track x;`
-
-    public TrackStatement(Token name, Node? initializer)
     {
-        Name = name;
-        Initializer = initializer;
+        public Token Name { get; }
+        public Node? Initializer { get; }     //null for `track x;`
+
+        public TrackStatement(Token name, Node? initializer)
+        {
+            Name = name;
+            Initializer = initializer;
+        }
     }
-}
+
+    public class BlockStatement : Statement
+    {
+        public List<Statement> Statements;
+        public BlockStatement(List<Statement> statements) { Statements = statements; }
+    }
+
+    public class Assign : Node
+    {
+        public Token Name;
+        public Node Value;
+        public Assign(Token name, Node value) { Name = name; Value = value; }
+    }
+
 }
 
 

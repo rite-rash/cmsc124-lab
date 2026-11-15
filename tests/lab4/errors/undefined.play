@@ -1,0 +1,1 @@
+stream asdfghjkl; // expect runtime error: Undefined variable 'asdfghjkl'.

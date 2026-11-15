@@ -126,51 +126,6 @@ namespace Ck
             }
         }
 
-        //runs one ast statement then returns status
-        // public bool execute(Statement statement)
-        // {
-        //     try
-        //     {
-
-        //         switch (statement)
-        //         //check if the statement is under subclass stream or espression which was under abstract
-        //         {
-        //             //use stringify and print if steam then if expression just eval without printing
-        //             case StreamStatement ss: Console.WriteLine(stringify(evaluate(ss.Expression))); break;
-        //             case ExpressionStatement es: evaluate(es.Expression); break;
-        //             //for condituonals
-        //             case IfStatement ifs:
-        //                 if (isTruthy(evaluate(ifs.Condition)))
-        //                 {
-        //                     execute(ifs.IfBranch);
-        //                 }
-        //                 else if (ifs.ElseBranch != null)
-        //                 {
-        //                     execute(ifs.ElseBranch);
-        //                 }
-        //                 break;
-        //             case WhileStatement w:
-        //             //TODO: add a run function after
-        //                 while (isTruthy(evaluate(w.Condition)))
-        //                     if (!execute(w.Body)) return false;
-        //                 break;
-        //             case TrackStatement ts:
-        //             {
-        //                 object? value = ts.Initializer == null ? null : evaluate(ts.Initializer);
-        //                 environment.define(ts.Name, value);
-        //                 break;
-        //             }
-        //             default:
-        //             throw new InvalidOperationException("Evaluator: unknown statement " + statement?.GetType().Name);
-        //         }
-        //         return true;
-        //     }
-        //     catch (RuntimeError e)
-        //     {
-        //         Errors.ReportRuntimeError(e.Operator.Line, e.Message);
-        //         return false;
-        //     }
-        // }
 
     private void run(Statement statement)
     {

@@ -1,0 +1,3 @@
+{
+    track d = 1;
+    stream d; // expect error: Expect '}' after block.

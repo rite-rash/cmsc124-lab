@@ -1,0 +1,15 @@
+track d = 1;
+{
+    track i = 7;
+    {
+        track l = 3;
+        stream d; // expect: 1.0
+        stream i; // expect: 7.0
+        stream l; // expect: 3.0
+
+    d = 24;
+}
+    stream d; // expect: 24.0
+    stream i; // expect: 7.0
+}
+stream d; // expect: 24.0

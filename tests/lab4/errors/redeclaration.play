@@ -1,0 +1,2 @@
+track d = 6;
+track d = 7; // expect error: Already a variable named 'd' in this scope.

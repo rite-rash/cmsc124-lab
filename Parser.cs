@@ -89,6 +89,7 @@ namespace Ck
                     case TokenType.STREAM:
                     case TokenType.LEFT_BRACE:
                     case TokenType.RIGHT_BRACE:
+                    case TokenType.WHILE:
                         return;
                 }
                 advance();
@@ -260,10 +261,10 @@ namespace Ck
 
         private Statement varDeclaration()
         {
-            Token name = consume(TokenType.LABEL, "Expect variable name.");
+            Token name = consume(TokenType.LABEL, "Expected variable name.");
             Node? initializer = null;
             if (match(TokenType.EQUAL)) initializer = expression();
-            consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
+            consume(TokenType.SEMICOLON, "Expected ';' after variable declaration.");
             declare(name);
             return new TrackStatement(name, initializer);
         }
@@ -275,6 +276,8 @@ namespace Ck
             {
                 return ifStatement();
             }
+
+            if (match(TokenType.WHILE)) return whileStatement();
 
 
             if (match(TokenType.STREAM))
@@ -288,17 +291,19 @@ namespace Ck
             return expressionStatement();
         }
 
+        //different types of statements, like print, expression, block, if, while
+
         private Statement printStatement()
         {
             Node value = expression();
-            consume(TokenType.SEMICOLON, "Expect ';' after value.");
+            consume(TokenType.SEMICOLON, "Expected ';' after value.");
             return new StreamStatement(value);
         }
 
         private Statement expressionStatement()
         {
             Node expr = expression();
-            consume(TokenType.SEMICOLON, "Expect ';' after expression.");
+            consume(TokenType.SEMICOLON, "Expected ';' after expression.");
             return new ExpressionStatement(expr);
         }
 
@@ -313,7 +318,7 @@ namespace Ck
                     var d = declaration();
                     if (d != null) stmts.Add(d);
                 }
-                consume(TokenType.RIGHT_BRACE, "Expect '}' after block.");
+                consume(TokenType.RIGHT_BRACE, "Expected '}' after block.");
             }
             finally { scopes.RemoveAt(scopes.Count - 1); }
             return new BlockStatement(stmts);
@@ -335,9 +340,14 @@ namespace Ck
                 }
 
                 return new IfStatement(condition, ifBranch, elseBranch);
+        }
 
-
-
+        private Statement whileStatement()
+        {
+            consume(TokenType.LEFT_PAREN, "Expected '(' after 'while'.");
+            Node cond = expression();
+            consume(TokenType.RIGHT_PAREN, "Expected ')' after condition.");
+            return new WhileStatement(cond, statement());
         }
 
 

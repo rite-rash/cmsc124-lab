@@ -278,6 +278,7 @@ namespace Ck
             }
 
             if (match(TokenType.WHILE)) return whileStatement();
+            if (match(TokenType.FOR)) return forStatement();
 
 
             if (match(TokenType.STREAM))
@@ -348,6 +349,47 @@ namespace Ck
             Node cond = expression();
             consume(TokenType.RIGHT_PAREN, "Expected ')' after condition.");
             return new WhileStatement(cond, statement());
+        }
+
+        private Statement forStatement()
+        {
+            consume(TokenType.LEFT_PAREN, "Expected '(' after 'for'.");
+
+            //outer block scope for the for loop, so that variables declared in the for loop are scoped to the loop
+            scopes.Add(new HashSet<string>());
+            try
+            {
+                //1. initializer (optional)
+                Statement? init;
+                if (match(TokenType.SEMICOLON)) init = null;
+                else if (match(TokenType.TRACK)) init = varDeclaration();   //consumes its own ';'
+                else init = expressionStatement();                          //consumes its own ';'
+
+                //2. condition (optional)
+                Node? cond = null;
+                if (!check(TokenType.SEMICOLON)) cond = expression();
+                consume(TokenType.SEMICOLON, "Expected ';' after loop condition.");
+
+                //3. increment (optional)
+                Node? incr = null;
+                if (!check(TokenType.RIGHT_PAREN)) incr = expression();
+                consume(TokenType.RIGHT_PAREN, "Expected ')' after for clauses.");
+
+                //4. body
+                Statement body = statement();
+
+                //act as for loop is a while loop, with the increment at the end of the body, and the condition as the while condition
+                if (incr != null)
+                    body = new BlockStatement(new List<Statement> { body, new ExpressionStatement(incr) });
+
+                body = new WhileStatement(cond ?? new Literal(true), body);
+
+                if (init != null)
+                    body = new BlockStatement(new List<Statement> { init, body });
+
+                return body;
+            }
+            finally { scopes.RemoveAt(scopes.Count - 1); }
         }
 
 

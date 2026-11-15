@@ -39,6 +39,7 @@ public enum TokenType
     ELSE,
 
     WHILE,      //while
+    FOR,        //for
 
     EOF //end
 

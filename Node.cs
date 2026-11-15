@@ -136,6 +136,13 @@ namespace Ck
         public Assign(Token name, Node value) { Name = name; Value = value; }
     }
 
+    public class WhileStatement : Statement
+    {
+        public Node Condition { get; }
+        public Statement Body { get; }
+        public WhileStatement(Node c, Statement b) { Condition = c; Body = b; }
+    }
+    
 }
 
 

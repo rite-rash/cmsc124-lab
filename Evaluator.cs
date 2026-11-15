@@ -1,6 +1,8 @@
 // DESCRIPTION: traverses the AST and computes actual values
 
 using System;
+using System.Collections.Generic;
+
 namespace Ck
 {
     public class Evaluator
@@ -124,61 +126,57 @@ namespace Ck
             }
         }
 
-        //runs one ast statement then returns status
-        public bool execute(Statement statement)
-        {
-            try
-            {
 
-                switch (statement)
-                //check if the statement is under subclass stream or espression which was under abstract
-                {
-                    //use stringify and print if steam then if expression just eval without printing
-                    case StreamStatement ss: Console.WriteLine(stringify(evaluate(ss.Expression))); break;
-                    case ExpressionStatement es: evaluate(es.Expression); break;
-                    //for condituonals
-                    case IfStatement ifs:
-                        if (isTruthy(evaluate(ifs.Condition)))
-                        {
-                            execute(ifs.IfBranch);
-                        }
-                        else if (ifs.ElseBranch != null)
-                        {
-                            execute(ifs.ElseBranch);
-                        }
-                        break;
-                    case TrackStatement ts:
-                        object? value = ts.Initializer == null ? null : evaluate(ts.Initializer);
-                        environment.define(ts.Name, value);
-                        break;
-                    case BlockStatement bs:
-                        if (!executeBlock(bs.Statements, new Environment(environment))) return false;
-                        break;
-                    default:
-                    throw new InvalidOperationException("Evaluator: unknown statement " + statement?.GetType().Name);
-                }
-                return true;
-            }
-            catch (RuntimeError e)
-            {
-                Errors.ReportRuntimeError(e.Operator.Line, e.Message);
-                return false;
-            }
-        }
-
-        public bool executeBlock(List<Statement> statements, Environment blockEnv)
+    private void run(Statement statement)
+    {
+        switch (statement)
         {
-            Environment previous = environment;
-            try
+            case StreamStatement ss:
+                Console.WriteLine(stringify(evaluate(ss.Expression)));
+                break;
+            case ExpressionStatement es:
+                evaluate(es.Expression);
+                break;
+            case IfStatement ifs:
+                if (isTruthy(evaluate(ifs.Condition))) run(ifs.IfBranch);
+                else if (ifs.ElseBranch != null) run(ifs.ElseBranch);
+                break;
+            case TrackStatement ts:
             {
-                environment = blockEnv;
-                foreach (var s in statements)
-                    if (!execute(s)) return false;   // execute swallows RuntimeError and returns false
-                return true;
+                object? value = ts.Initializer == null ? null : evaluate(ts.Initializer);
+                environment.define(ts.Name, value);
+                break;
             }
-            finally { environment = previous; }
+            case BlockStatement bs:
+                executeBlock(bs.Statements, new Environment(environment));
+                break;
+            default:
+                throw new InvalidOperationException("Evaluator: Detected unknown type of statement " + statement?.GetType().Name);
         }
-        
+    }
+
+    public void executeBlock(List<Statement> statements, Environment blockEnv)
+    {
+        var previous = environment;
+        try
+        {
+            environment = blockEnv;
+            foreach (var s in statements) run(s);
+        }
+        finally { environment = previous; }
+    }
+
+    public bool execute(Statement statement)
+    {
+        try { run(statement); return true; }
+        catch (RuntimeError e)
+        {
+            Errors.ReportRuntimeError(e.Operator.Line, e.Message);
+            return false;
+        }
+    }
+
+
         //handles multiple statements and stops when the execute flag is false
         //bool return type to indicate if the execution was successful or not so Program.cs can exit with a non-zero code
         public bool interpret(List<Statement> statements)

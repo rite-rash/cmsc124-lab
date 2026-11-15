@@ -38,6 +38,9 @@ public enum TokenType
     IF,
     ELSE,
 
+    WHILE,      //while
+    FOR,        //for
+
     EOF //end
 
 }

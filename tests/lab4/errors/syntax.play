@@ -1,2 +1,2 @@
 track d = 3
-stream d; // expect error: Expect ';' after variable declaration.
+stream d; // expect error: Expected ';' after variable declaration.

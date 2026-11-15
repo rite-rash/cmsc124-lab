@@ -39,8 +39,8 @@ Exit code 0 means the program ran with no errors. See Errors and Diagnostics sec
 
 | Keyword | Purpose | Status |
 |---|---|---|
-| `track` | variable declaration | (parsing not yet implemented) |
-| `stream` | output statement | (parsing not yet implemented)  |
+| `track` | variable declaration | implemented |
+| `stream` | output statement | implemented |
 | `album` | function definition | (parsing not yet implemented)  |
 | `repeat` | loop | (parsing not yet implemented) |
 | `live` | boolean true | implemented |
@@ -93,9 +93,9 @@ Exit code 0 means the program ran with no errors. See Errors and Diagnostics sec
 
 - Whitespace significant: No. Spaces, tabs, and carriage returns are
   discarded after being consumed.
-- Statement terminator: Semicolon, but not implemented yet.
-- Block delimiters: scanned but not yet used recognized as a dellimeter.
-- Grouping delimiters: scanned but not yet used for grouping.
+- Statement terminator: semicolon (`;`). Every declaration and statement ends with one.
+- Block delimiters: `{` and `}` open and close a block, which creates a new scope.
+- Grouping delimiters: `(` and `)` group an expression.
 
 ## Token output format
 
@@ -119,13 +119,16 @@ printStmt   → "stream" expression ";" ;
 block       → "{" declaration* "}" ;
 exprStmt    → expression ";" ;
 
-expression → equality
-equality → comparison ( ( "!=" | "==" ) comparison )*
-comparison → term ( ( ">" | ">=" | "<" | "<=" ) term )*
-term → factor ( ( "-" | "+" ) factor )*
-factor → unary ( ( "/" | "*" ) unary )*
-unary → ( "!" | "-" ) unary | primary
-primary → NUMBER | STRING | "live" | "mute" | "rest" | "(" expression ")"
+expression  → assignment ;
+assignment  → IDENTIFIER "=" assignment | logic_or ;
+logic_or    → logic_and ( "solo" logic_and )* ;
+logic_and   → equality ( "chord" equality )* ;
+equality    → comparison ( ( "!=" | "==" ) comparison )* ;
+comparison  → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
+term        → factor ( ( "-" | "+" ) factor )* ;
+factor      → unary ( ( "/" | "*" ) unary )* ;
+unary       → ( "!" | "-" ) unary | primary ;
+primary     → NUMBER | STRING | "live" | "mute" | "rest" | IDENTIFIER | "(" expression ")" ;
 
 ## Parse output format
 ``` (+ 2.0 (* 3.0 4.0)) ```
@@ -142,8 +145,9 @@ primary → NUMBER | STRING | "live" | "mute" | "rest" | "(" expression ")"
 
 - **Paradigm:** SoundWave is an imperative language that executes sequential statements and supports side-effect output operations
 - **Mutability:** Bindings are `mutable`. Variables which are created using `track` are updated using `=`
-- **Binding time:** runtime
-- **Storage-lifetime:** implicit heap-dynamic
+- **Binding time:** the name-to-storage binding is made at runtime, when the `track` statement executes. Redeclaration in the same scope is checked earlier, at parse time.
+- **Storage-lifetime:** stack-dynamic.
+  -  **Note:** This erases variables defined in an album statement after the block ends. This will be modified in a future implementation.
 - **Output:** `stream`statement
 
 
@@ -168,8 +172,8 @@ SOUNDWAVE value | Host representation |
 
 - **Numbers** always print with a decimal point: `2 + 3` prints `5.0`, and
   `7 / 2` prints `3.5`. 
-- **Nil** prints as `rest`. (confirm)
-- **Booleans** print as `live` and `mute`. (confirm)
+- **Nil** prints as `rest`.
+- **Booleans** print as `live` and `mute`.
 - **Strings** print without quotes: `"hi" + " there"` prints `hi there`.
  
 
@@ -196,8 +200,11 @@ truthy, including `0` and an empty string.
 
 ### Control flow and functions
 
-- Logical operators return: [booleans, or the operand]
-- Dangling else binds to: [which if]
+- Logical operators return:
+  - the operand that decided the result, not necessarily a boolean.
+  - `solo` returns the left operand if it is truthy, otherwise the right.
+  - `chord` returns the left operand if it is falsey, otherwise the right.
+- Dangling else binds to: nearest if
 - Closure capture of a loop variable: [per iteration, or shared]
 - Function with no return statement produces: [value]
 - Arity mismatch: [message and exit code]
@@ -233,7 +240,7 @@ Message format:
 |---|---|---|---|
 | tests/lab1 | Scanner | sidecar | `--tokenize` |
 | tests/lab2 | Parser | sidecar | `--parse` |
-| tests/lab3 | Evaluator | inline | `--eval` |
+| tests/lab3 | Evaluator | sidecar | `--eval` |
 | tests/lab4 | Context | inline | none |
 | tests/lab5 | Functions | inline | none |
 
@@ -315,8 +322,8 @@ python3 run_tests.py tests/lab1
 ## Sample code
 
 ```
-track greeting = "hello"
-stream greeting
+track greeting = "hello";
+stream greeting;
 ```
 
 Output:
@@ -329,6 +336,27 @@ Token(type=LYRIC, lexeme="hello", literal=hello, line=1)
 Token(type=STREAM, lexeme=stream, literal=null, line=2)
 Token(type=LABEL, lexeme=greeting, literal=null, line=2)
 Token(type=EOF, lexeme=, literal=null, line=2)
+```
+
+### Example program: `examples/scope-demo.play`
+```
+track total = 0;
+track x = 10;
+
+{
+    track x = x + 5;
+    total = total + x;
+    stream total;              // 15.0
+}
+
+{
+    track y = x / 10;
+    total = total + x + y;
+    stream total;              // 26.0
+}
+
+stream x;                  // 10.0
+stream total;                  // 26.0
 ```
 
 ## Design rationale
@@ -351,4 +379,7 @@ were for the purpose of simplification and to focus more on the logic.
 | Activity | What changed in the language |
 |---|---|
 | Lab 1 | Scanner implemented |
-| Lab 2 | Parser implemented, Added live/mute/rest as boolean and nil literals: 
+| Lab 2 | Parser implemented, Added live/mute/rest as boolean and nil literals
+| Lab 3 | Evaluator implemented: expression evaluation, truthiness, and runtime errors |
+| Lab 4 | Variables and scope: `track` declarations, assignment, `stream` statements, blocks, shadowing, lexical block scope |
+

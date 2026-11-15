@@ -14,7 +14,12 @@ namespace Ck
         }
 
         //always local, never walks outward
-        public void define(string name, object? value) => values[name] = value;
+        public void define(Token name, object? value)
+        {
+            if (values.ContainsKey(name.Lexeme))
+                throw new RuntimeError(name, $"Already a variable named '{name.Lexeme}' in this scope.");
+            values[name.Lexeme] = value;
+        }
 
         public void assign(Token name, object? value)
         {

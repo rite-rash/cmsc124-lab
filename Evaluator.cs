@@ -148,11 +148,12 @@ namespace Ck
                         }
                         break;
                     case TrackStatement ts:
-                    {
                         object? value = ts.Initializer == null ? null : evaluate(ts.Initializer);
                         environment.define(ts.Name, value);
                         break;
-                    }
+                    case BlockStatement bs:
+                        if (!executeBlock(bs.Statements, new Environment(environment))) return false;
+                        break;
                     default:
                     throw new InvalidOperationException("Evaluator: unknown statement " + statement?.GetType().Name);
                 }
@@ -163,6 +164,19 @@ namespace Ck
                 Errors.ReportRuntimeError(e.Operator.Line, e.Message);
                 return false;
             }
+        }
+
+        public bool executeBlock(List<Statement> statements, Environment blockEnv)
+        {
+            Environment previous = environment;
+            try
+            {
+                environment = blockEnv;
+                foreach (var s in statements)
+                    if (!execute(s)) return false;   // execute swallows RuntimeError and returns false
+                return true;
+            }
+            finally { environment = previous; }
         }
         
         //handles multiple statements and stops when the execute flag is false

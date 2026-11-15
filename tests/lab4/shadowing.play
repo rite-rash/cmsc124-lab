@@ -1,0 +1,7 @@
+track d = "out";
+{
+    track d= "in";
+    stream d;      // expect: in
+}
+
+stream d; //expect: out

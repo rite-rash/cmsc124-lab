@@ -1,0 +1,2 @@
+track d;
+stream d; //expect: rest

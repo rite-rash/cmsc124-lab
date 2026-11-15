@@ -150,7 +150,7 @@ namespace Ck
                     case TrackStatement ts:
                     {
                         object? value = ts.Initializer == null ? null : evaluate(ts.Initializer);
-                        environment.define(ts.Name.Lexeme, value);
+                        environment.define(ts.Name, value);
                         break;
                     }
                     default:

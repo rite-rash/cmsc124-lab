@@ -1,0 +1,17 @@
+track total = 0;
+track x = 10;
+
+{
+    track x = x + 5;
+    total = total + x;
+    stream total;              // expect: 15.0
+}
+
+{
+    track tax = x / 10;
+    total = total + x + tax;
+    stream total;              // expect: 26.0
+}
+
+stream x;                  // expect: 10.0
+stream total;                  // expect: 26.0

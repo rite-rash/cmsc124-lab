@@ -1,14 +1,14 @@
-1  track total = 0;
-2  track x = 10;
-3  {
-4      track x = x + 5;
-5      total = total + x;
-6      stream total;
-7  }
-8  {
-9      track total = x / 10;
-10     total = total + x + total;
-11     stream total;
-12 }
-13 stream x;
-14 stream total;
+track total = 0;
+track x = 10;
+{
+    track x = x + 5;
+    total = total + x;
+    stream total;
+  }
+  {
+    track total = x / 10;
+    total = total + x + total;
+    stream total;
+ }
+ stream x;
+ stream total;

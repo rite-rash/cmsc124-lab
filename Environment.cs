@@ -15,7 +15,7 @@ namespace Ck
 
         // for native func where no token is required and just registered by name
         public void define(string name, object? value) {
-            value[name] = value
+            values[name] = value;
         } 
 
 

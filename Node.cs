@@ -4,6 +4,20 @@
 
 namespace Ck
 {
+    public class Call : Node
+    {
+        public Node Callee { get; }
+        public Token Paren { get; }
+        public List<Node> Args { get; }
+
+        public Call(Node callee, Token paren, List<Node> args){
+            Callee = callee;
+            Paren = paren;
+            Args = args;
+        }
+    }
+
+
     public class Variable : Node
     {
         public Token Name { get; }

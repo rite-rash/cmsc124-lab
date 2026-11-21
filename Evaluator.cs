@@ -9,15 +9,26 @@ namespace Ck
     {
         // -------- HELPERS --------
         //new environment for variable storage, stays alive as long as evaluator is alive, so variables can be stored and retrieved
-        private Environment environment = new Environment();
+        // private Environment environment = new Environment();
+
+        // stores global variables and native functions
+        public readonly Environment globals = new Environment();
+        private Environment environment;   //move pointer to currently active scope
+
+        //starts at global and preloads native fnctions
+        public Evaluator()
+        {
+            environment = globals;
+
+        }
 
 
         //check if value is truthy
         private bool isTruthy(object? v)
         {
-            if (v == null) 
+            if (v == null)
                 return false;     //rest or null
-            if (v is bool b) 
+            if (v is bool b)
                 return b;       //live/mute or true/false
             return true;        //default
         }

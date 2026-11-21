@@ -22,6 +22,37 @@ namespace Ck
 
         }
 
+        private object? evalCall(Call expr)
+        {
+            //search for Icallable object which is the native func
+            object? callee = evaluate(expr.Callee);
+            //ca pass expressions in func
+            List<object?> args = new List<object?>();
+            //iterate through the passed AST nodes then collect them to args
+            foreach (var argument in expr.Args) // change to expr.Arguments if named Arguments in Node.cs
+            {
+                args.Add(evaluate(argument));
+            }
+            //Cast as ICallable
+            //if so it means it's native otherwise could be double, string, null then just return null
+            ICallable? function = callee as ICallable;
+            if (function == null)
+            {
+                throw new RuntimeError(expr.Paren, "Can only call functions.");
+            }
+            //check for arity
+            if (args.Count != function.ParamsCount())
+            {
+                throw new RuntimeError(
+                    expr.Paren,
+                    $"Expected {function.ParamsCount()} arguments but got {args.Count}."
+                );
+            }
+            //run func and return result
+            return function.Call(this, args);
+        }
+
+
 
         //check if value is truthy
         private bool isTruthy(object? v)
@@ -47,17 +78,18 @@ namespace Ck
         {
             switch (node)
             {
+                case Call c: return evalCall(c);
                 case Literal l: return l.Value;
                 case Grouping g: return evaluate(g.Expression);
                 case Binary b: return evalBinary(b);
                 case Unary u: return evalUnary(u);
                 case Variable v: return environment.get(v.Name);
                 case Assign a:
-                {
-                    object? value = evaluate(a.Value);
-                    environment.assign(a.Name, value);
-                    return value;
-                }
+                    {
+                        object? value = evaluate(a.Value);
+                        environment.assign(a.Name, value);
+                        return value;
+                    }
                 default: throw new InvalidOperationException("Evaluator: unknown node " + node?.GetType().Name);
             }
         }

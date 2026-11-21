@@ -287,19 +287,14 @@ namespace Ck
                 consume(TokenType.SEMICOLON, "Expected ';' after value.");
                 return new StreamStatement(value);
             }
-            if (match(TokenType.STREAM)) return printStatement();
+
             if (match(TokenType.LEFT_BRACE)) return block();
             return expressionStatement();
         }
 
         //different types of statements, like print, expression, block, if, while
 
-        private Statement printStatement()
-        {
-            Node value = expression();
-            consume(TokenType.SEMICOLON, "Expected ';' after value.");
-            return new StreamStatement(value);
-        }
+
 
         private Statement expressionStatement()
         {

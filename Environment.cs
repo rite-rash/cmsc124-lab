@@ -13,6 +13,12 @@ namespace Ck
             this.enclosing = enclosing;
         }
 
+        // for native func where no token is required and just registered by name
+        public void define(string name, object? value) {
+            values[name] = value;
+        } 
+
+
         //always local, never walks outward
         public void define(Token name, object? value)
         {
@@ -34,5 +40,7 @@ namespace Ck
             if (enclosing != null) return enclosing.get(name);
             throw new RuntimeError(name, $"Undefined variable '{name.Lexeme}'.");
         }
+
+
     }
 }

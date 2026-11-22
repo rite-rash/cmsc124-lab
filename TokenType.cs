@@ -11,6 +11,9 @@ public enum TokenType
     LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE, SEMICOLON,
     MIX, MINUS, STAR, SLASH, EQUAL, BANG, LESS, GREATER, COLON,
 
+
+    COMMA, // for separating args
+
     //multi-character
     EQUAL_EQUAL,
     CHECK_IF,

@@ -9,15 +9,59 @@ namespace Ck
     {
         // -------- HELPERS --------
         //new environment for variable storage, stays alive as long as evaluator is alive, so variables can be stored and retrieved
-        private Environment environment = new Environment();
+        // private Environment environment = new Environment();
+
+        // stores global variables and native functions
+        public readonly Environment Globals = new Environment();
+        private Environment _environment;   //move pointer to currently active scope
+
+        //starts at global and preloads native fnctions
+        public Evaluator()
+        {
+            _environment = Globals;
+            Globals.define("playNote", new PlayNote());
+
+
+        }
+
+        private object? evalCall(Call expr)
+        {
+            //search for Icallable object which is the native func
+            object? callee = evaluate(expr.Callee);
+            //ca pass expressions in func
+            List<object?> args = new List<object?>();
+            //iterate through the passed AST nodes then collect them to args
+            foreach (var argument in expr.Args) // change to expr.Arguments if named Arguments in Node.cs
+            {
+                args.Add(evaluate(argument));
+            }
+            //Cast as ICallable
+            //if so it means it's native otherwise could be double, string, null then just return null
+            ICallable? function = callee as ICallable;
+            if (function == null)
+            {
+                throw new RuntimeError(expr.Paren, "Can only call functions.");
+            }
+            //check for arity
+            if (args.Count != function.ParamsCount())
+            {
+                throw new RuntimeError(
+                    expr.Paren,
+                    $"Expected {function.ParamsCount()} arguments but got {args.Count}."
+                );
+            }
+            //run func and return result
+            return function.Call(this, args);
+        }
+
 
 
         //check if value is truthy
         private bool isTruthy(object? v)
         {
-            if (v == null) 
+            if (v == null)
                 return false;     //rest or null
-            if (v is bool b) 
+            if (v is bool b)
                 return b;       //live/mute or true/false
             return true;        //default
         }
@@ -36,17 +80,18 @@ namespace Ck
         {
             switch (node)
             {
+                case Call c: return evalCall(c);
                 case Literal l: return l.Value;
                 case Grouping g: return evaluate(g.Expression);
                 case Binary b: return evalBinary(b);
                 case Unary u: return evalUnary(u);
-                case Variable v: return environment.get(v.Name);
+                case Variable v: return _environment.get(v.Name);
                 case Assign a:
-                {
-                    object? value = evaluate(a.Value);
-                    environment.assign(a.Name, value);
-                    return value;
-                }
+                    {
+                        object? value = evaluate(a.Value);
+                        _environment.assign(a.Name, value);
+                        return value;
+                    }
                 default: throw new InvalidOperationException("Evaluator: unknown node " + node?.GetType().Name);
             }
         }
@@ -144,11 +189,11 @@ namespace Ck
             case TrackStatement ts:
             {
                 object? value = ts.Initializer == null ? null : evaluate(ts.Initializer);
-                environment.define(ts.Name, value);
+                _environment.define(ts.Name, value);
                 break;
             }
             case BlockStatement bs:
-                executeBlock(bs.Statements, new Environment(environment));
+                executeBlock(bs.Statements, new Environment(_environment));
                 break;
             default:
                 throw new InvalidOperationException("Evaluator: Detected unknown type of statement " + statement?.GetType().Name);
@@ -157,13 +202,13 @@ namespace Ck
 
     public void executeBlock(List<Statement> statements, Environment blockEnv)
     {
-        var previous = environment;
+        var previous = _environment;
         try
         {
-            environment = blockEnv;
+            _environment = blockEnv;
             foreach (var s in statements) run(s);
         }
-        finally { environment = previous; }
+        finally { _environment = previous; }
     }
 
     public bool execute(Statement statement)

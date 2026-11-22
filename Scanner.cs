@@ -181,6 +181,8 @@ namespace Ck
                 case '-': addToken(TokenType.MINUS); break;
                 case '*': addToken(TokenType.STAR); break;
                 case ':': addToken(TokenType.COLON); break; 
+                case ',': addToken(TokenType.COMMA); break;
+
                 case '"':
                     stringLiteral();
                     break;

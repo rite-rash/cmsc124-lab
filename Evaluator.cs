@@ -12,13 +12,15 @@ namespace Ck
         // private Environment environment = new Environment();
 
         // stores global variables and native functions
-        public readonly Environment globals = new Environment();
-        private Environment environment;   //move pointer to currently active scope
+        public readonly Environment Globals = new Environment();
+        private Environment _environment;   //move pointer to currently active scope
 
         //starts at global and preloads native fnctions
         public Evaluator()
         {
-            environment = globals;
+            _environment = Globals;
+            Globals.define("playNote", new PlayNote());
+
 
         }
 
@@ -83,11 +85,11 @@ namespace Ck
                 case Grouping g: return evaluate(g.Expression);
                 case Binary b: return evalBinary(b);
                 case Unary u: return evalUnary(u);
-                case Variable v: return environment.get(v.Name);
+                case Variable v: return _environment.get(v.Name);
                 case Assign a:
                     {
                         object? value = evaluate(a.Value);
-                        environment.assign(a.Name, value);
+                        _environment.assign(a.Name, value);
                         return value;
                     }
                 default: throw new InvalidOperationException("Evaluator: unknown node " + node?.GetType().Name);
@@ -187,11 +189,11 @@ namespace Ck
             case TrackStatement ts:
             {
                 object? value = ts.Initializer == null ? null : evaluate(ts.Initializer);
-                environment.define(ts.Name, value);
+                _environment.define(ts.Name, value);
                 break;
             }
             case BlockStatement bs:
-                executeBlock(bs.Statements, new Environment(environment));
+                executeBlock(bs.Statements, new Environment(_environment));
                 break;
             default:
                 throw new InvalidOperationException("Evaluator: Detected unknown type of statement " + statement?.GetType().Name);
@@ -200,13 +202,13 @@ namespace Ck
 
     public void executeBlock(List<Statement> statements, Environment blockEnv)
     {
-        var previous = environment;
+        var previous = _environment;
         try
         {
-            environment = blockEnv;
+            _environment = blockEnv;
             foreach (var s in statements) run(s);
         }
-        finally { environment = previous; }
+        finally { _environment = previous; }
     }
 
     public bool execute(Statement statement)

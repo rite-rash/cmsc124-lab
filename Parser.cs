@@ -210,8 +210,50 @@ namespace Ck
                 Node right = unary();
                 return new Unary(op, right);
             }
-            return primary();
+            return call(); // since call is has higher precedence
         }
+
+        private Node call()
+        {
+            Node expr = primary(); //get callee first
+
+            while (true)
+            {
+                //pass expr as a callee parameter
+                if (match(TokenType.LEFT_PAREN)) 
+                {
+                    expr = finishCall(expr);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return expr;
+        }
+        //gets all argyments in call and bundle to node
+        private Node finishCall(Node callee)
+        {
+            List<Node> args = new List<Node>();
+
+            if (!check(TokenType.RIGHT_PAREN))
+            {
+                do
+                {
+                    if (args.Count >= 255)
+                    {
+                        Errors.ReportError(peek().Line, "Can't have more than 255 arguments.");
+                    }
+                    args.Add(expression());
+                }
+                while (match(TokenType.COMMA));
+            }
+
+            Token paren = consume(TokenType.RIGHT_PAREN, "Expected ')' after arguments.");
+            return new Call(callee, paren, args);
+        }
+
 
         private Node primary()
         {
@@ -225,7 +267,7 @@ namespace Ck
             }
 
 
-            
+
             //makes x a variable if it matches a label token,
             //then creates a new variable node with same label
             if (match(TokenType.LABEL)) return new Variable(previous());

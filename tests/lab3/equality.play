@@ -1,8 +1,8 @@
-1 == 1;  //expected: live
-1 == 2;  //expected: mute
-"a" == "a";  //expected: live
-"a" == "b";  //expected: mute
-1 == "1";  //expected: live
-1 == "2";  //expected: mute
-rest == rest;  //expected: live
-1 != 2;  //expected: live
+1 == 1;  // expect: live
+1 == 2;  // expect: mute
+"a" == "a";  // expect: live
+"a" == "b";  // expect: mute
+1 == "1";  // expect: live
+1 == "2";  // expect: mute
+rest == rest;  // expect: live
+1 != 2;  // expect: live

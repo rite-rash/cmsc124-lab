@@ -11,14 +11,14 @@ namespace Ck
         private static Tree? checkSource(string source)
         {
             var tokens = new Scanner(source).scanTokens();
-            if (Errors.HadError)
+            if (Errors.HadStaticError)
             {
                 return null;
             }
 
             Tree tree = new Parser(tokens).parse();
 
-            if (Errors.HadError){
+            if (Errors.HadStaticError){
                 return null;
             }
 
@@ -63,7 +63,7 @@ namespace Ck
 
             var tokens = new Scanner(source).scanTokens();
 
-            if (Errors.HadError)
+            if (Errors.HadStaticError)
                 return 65; //data format error
 
             foreach (var token in tokens)
@@ -136,11 +136,11 @@ namespace Ck
                 return 66;
             }
             var tokens = new Scanner(source).scanTokens();
-            if (Errors.HadError) return 65;
+            if (Errors.HadStaticError) return 65;
 
             //just report errors abd dont print any
             var statements = new Parser(tokens).parse();
-            if (Errors.HadError) return 65;
+            if (Errors.HadStaticError) return 65;
 
             var evaluator = new Evaluator();
             foreach (var stmt in statements.Statements)

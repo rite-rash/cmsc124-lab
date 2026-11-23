@@ -1,4 +1,8 @@
-"a"+"b"; //expected: ab
-"hello" + "world";  //expected: hello world
-"helloooo " + " w o  o r ld";   //expected: helloooo  w o  o r ld
-"    emp" + "ty    ";   //expected:    empty    
+"a"+"b"; // expect: ab
+"hello" + "world";  // expect: helloworld
+"helloooo " + " w o  o r ld";   // expect: helloooo  w o  o r ld
+"[" + "    emp" + "ty    " + "]";   // expect: [    empty    ]
+
+//archive:
+//"    emp" + "ty    ";   // expected: empty
+//TODO: this test needs to be done in sidecar

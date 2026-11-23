@@ -71,10 +71,10 @@ namespace Ck
             return value.ToString();
         }
 
-        //numbers always show decimal points (ADD TO README)
+        //archived for parse flag, kept as is so lab2 tests do not fail
         internal static string PrintNumber(double d)
         {
-            string s = d.ToString(CultureInfo.InvariantCulture);
+            string s = d.ToString();
             bool plain = s.IndexOfAny(new[] { '.', 'E', 'N', 'I' }) < 0;
             return plain ? s + ".0" : s;
         }

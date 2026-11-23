@@ -1,2 +1,2 @@
-1 + mute;
+1 + mute; // expect runtime error: Operands must be two numbers, or at least one string.
 // expected runtime error

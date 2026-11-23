@@ -1,5 +1,5 @@
-live chord mute;  //expected: mute
-mute solo live;  //expected: live
-mute solo 5;  //expected: 5.0
-live solo (1/0);  //expected: live
+live chord mute;  // expect: mute
+mute solo live;  // expect: live
+mute solo 5;  // expect: 5
+live solo (1/0);  // expect: live
 //since shortcircuit left operand

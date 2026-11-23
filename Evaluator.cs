@@ -20,7 +20,7 @@ namespace Ck
         {
             _environment = Globals;
             Globals.define("playNote", new PlayNote());
-            
+            Globals.define("note", new NoteFunction());
 
         }
 

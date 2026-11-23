@@ -100,7 +100,7 @@ namespace Ck
         private Token consume(TokenType type, String msg)
         {
             if (check(type)) return advance();
-            Errors.ReportError(peek().Line, msg);
+            Errors.ReportStaticError(peek().Line, msg);
             throw new Exception(msg);
         }
 
@@ -120,7 +120,7 @@ namespace Ck
                 if (expr is Variable v)
                     return new Assign(v.Name, value);
 
-                Errors.ReportError(equals.Line, "Invalid assignment target.");
+                Errors.ReportStaticError(equals.Line, "Invalid assignment target.");
             }
             return expr;
         }
@@ -243,7 +243,7 @@ namespace Ck
                 {
                     if (args.Count >= 255)
                     {
-                        Errors.ReportError(peek().Line, "Can't have more than 255 arguments.");
+                        Errors.ReportStaticError(peek().Line, "Can't have more than 255 arguments.");
                     }
                     args.Add(expression());
                 }
@@ -282,7 +282,7 @@ namespace Ck
             }
 
             //if none matched
-            Errors.ReportError(peek().Line, "Expected expression.");
+            Errors.ReportStaticError(peek().Line, "Expected expression.");
             throw new Exception("Expected expression.");
         }
 
@@ -436,7 +436,7 @@ namespace Ck
         private void declare(Token name)
         {
             if (!scopes[^1].Add(name.Lexeme)) //innermost set, which is the last one in the list (global scope prioritized)
-                Errors.ReportError(name.Line, $"Already a variable named '{name.Lexeme}' in this scope.");
+                Errors.ReportStaticError(name.Line, $"Already a variable named '{name.Lexeme}' in this scope.");
         }
 
     

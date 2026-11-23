@@ -1,2 +1,2 @@
-live + 1;
+live + 1; // expect runtime error: Operands must be two numbers, or at least one string.
 // expected runtime error

@@ -1,2 +1,2 @@
-1 / 0;
+1 / 0; // expect runtime error: Division by zero.
 // expected runtime error

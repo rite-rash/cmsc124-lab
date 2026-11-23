@@ -1,12 +1,12 @@
 // bind
 track d = 3;
-stream d; // expect: 3.0
+stream d; // expect: 3
 
 // reassign
 d = 1;
-stream d; // expect: 1.0
+stream d; // expect: 1
 
 // bind and reassign
 track i = (d = 7);
-stream i; // expect: 7.0
-stream d; // expect: 7.0
+stream i; // expect: 7
+stream d; // expect: 7

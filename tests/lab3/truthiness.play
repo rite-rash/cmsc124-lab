@@ -1,8 +1,8 @@
-!live;  //expected: mute
-live;   //expected: live
-!mute;  //expected: live
-mute;   //expected: mute
-!rest;  //expected: live
-rest;   //expected: rest;
-!"hello";   //expected: mute
-!0; //expected: mute
+!live;  // expect: mute
+live;   // expect: live
+!mute;  // expect: live
+mute;   // expect: mute
+!rest;  // expect: live
+rest;   // expect: rest
+!"hello";   // expect: mute
+!0; // expect: mute

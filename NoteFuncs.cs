@@ -25,8 +25,6 @@ namespace Ck
                 throw new NativeError("note() expects a value from 0 to 127.");
             return Names[n % 12] + (n / 12 - 1); // 60 -> "C4"
         }
-
-        public override string ToString() => "<native note>";
     }
 
 }

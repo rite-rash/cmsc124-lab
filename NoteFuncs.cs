@@ -13,6 +13,7 @@ namespace Ck
     {
         private static readonly string[] Names =
             { "C","C#","D","D#","E","F","F#","G","G#","A","A#","B" };
+            //flat notes not yet implemented bc it would break the array and the function
 
         public int ParamsCount() => 1;
 

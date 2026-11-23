@@ -20,7 +20,7 @@ namespace Ck
         {
             _environment = Globals;
             Globals.define("playNote", new PlayNote());
-
+            
 
         }
 
@@ -241,7 +241,15 @@ namespace Ck
         {
             if (v == null) return "rest";
             if (v is bool b) return b ? "live" : "mute";
-            if (v is double d) return AstPrinter.PrintNumber(d);
+            if (v is double d)
+            {
+                double r = Math.Round(d, MidpointRounding.AwayFromZero);
+                v = r;
+                if (r == 0) {
+                    v = 0;
+                }
+
+            }
             return v.ToString() ?? "";     // strings print without quotes
         }
     }
